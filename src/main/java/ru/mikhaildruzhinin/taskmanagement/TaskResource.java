@@ -27,7 +27,7 @@ public class TaskResource {
   @Path("/{id}")
   public Task getTask(@PathParam("id") int id) {
     return tasks.stream()
-            .filter(task -> task.id == id)
+            .filter(task -> task.getId() == id)
             .findFirst()
             .orElseThrow(() -> new RuntimeException("Not Found"));
   }
@@ -49,7 +49,7 @@ public class TaskResource {
   @Path("/{id}")
   public List<Task> deleteTask(@PathParam("id") int id) {
     return tasks.stream()
-            .dropWhile(task -> task.id == id)
+            .dropWhile(task -> task.getId() == id)
             .collect(Collectors.toList());
   }
 }
