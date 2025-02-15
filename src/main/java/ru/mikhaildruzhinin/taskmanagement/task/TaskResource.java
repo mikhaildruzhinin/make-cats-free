@@ -35,9 +35,10 @@ public class TaskResource {
 
   @PUT
   @Path("/{id}")
-  public Task updateTask(@PathParam("id") Long id, Task task) {
+  public ResponseMessage updateTask(@PathParam("id") Long id, Task task) {
     task.setId(id);
-    return repository.update(task);
+    boolean isUpdated = repository.update(task);
+    return new ResponseMessage(Boolean.toString(isUpdated));
   }
 
   @DELETE

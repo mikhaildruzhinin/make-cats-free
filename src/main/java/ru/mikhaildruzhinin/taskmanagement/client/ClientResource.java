@@ -35,9 +35,10 @@ public class ClientResource {
 
     @PUT
     @Path("/{id}")
-    public Client updateClient(@PathParam("id") Long id, Client client) {
+    public ResponseMessage updateClient(@PathParam("id") Long id, Client client) {
         client.setId(id);
-        return repository.update(client);
+        boolean isUpdated = repository.update(client);
+        return new ResponseMessage(Boolean.toString(isUpdated));
     }
 
     @DELETE

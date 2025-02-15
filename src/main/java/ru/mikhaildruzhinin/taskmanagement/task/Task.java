@@ -1,9 +1,9 @@
 package ru.mikhaildruzhinin.taskmanagement.task;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import ru.mikhaildruzhinin.taskmanagement.client.Client;
 
 @Entity
 public class Task {
@@ -11,16 +11,22 @@ public class Task {
     @GeneratedValue
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
+
     private String title;
+
     private String description;
 
-    public Task() {
-    }
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", insertable = false, updatable = false)
+    private Client client;
 
-    public Task(Long id, String title, String description) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "client_id")
+    private Long clientId;
+
+    public Task() {
     }
 
     public Long getId() {
@@ -35,6 +41,14 @@ public class Task {
         return description;
     }
 
+    public Client getClient() {
+        return client;
+    }
+
+    public Long getClientId() {
+        return clientId;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -45,5 +59,13 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
     }
 }

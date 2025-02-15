@@ -1,9 +1,12 @@
 package ru.mikhaildruzhinin.taskmanagement.client;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import ru.mikhaildruzhinin.taskmanagement.task.Task;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Client {
@@ -11,14 +14,15 @@ public class Client {
     @GeneratedValue
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
+
     private String name;
 
-    public Client() {
-    }
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks = new ArrayList<>();
 
-    public Client(Long id, String name) {
-        this.id = id;
-        this.name = name;
+    public Client() {
     }
 
     public Long getId() {
@@ -29,11 +33,19 @@ public class Client {
         return name;
     }
 
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 }

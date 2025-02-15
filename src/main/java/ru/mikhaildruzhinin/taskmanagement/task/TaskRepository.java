@@ -3,7 +3,6 @@ package ru.mikhaildruzhinin.taskmanagement.task;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
 
 import java.util.Optional;
 
@@ -11,13 +10,14 @@ import java.util.Optional;
 public class TaskRepository implements PanacheRepository<Task> {
 
     @Transactional
-    public Task update(Task newTask) {
+    public boolean update(Task newTask) {
         Optional<Task> optionalTask = findByIdOptional(newTask.getId());
-        optionalTask.map(task -> {
+        Optional<Boolean> optionalUpdated = optionalTask.map(task -> {
             task.setTitle(newTask.getTitle());
             task.setDescription(newTask.getDescription());
-            return task;
+            task.setClientId(newTask.getClientId());
+            return true;
         });
-        return optionalTask.orElseThrow(NotFoundException::new);
+        return optionalUpdated.orElse(false);
     }
 }
