@@ -1,51 +1,48 @@
 package ru.mikhaildruzhinin.taskmanagement.manager;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import ru.mikhaildruzhinin.taskmanagement.ResponseMessage;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Path("/managers")
 @Tag(name = "Managers")
 public class ManagerResource {
 
-    private List<Manager> managers = new ArrayList<>();
+    @Inject
+    ManagerRepository repository;
 
     @GET
     public List<Manager> getManagers() {
-        return managers;
+        return repository.listAll();
     }
 
     @GET
     @Path("/{id}")
-    public Manager getManager(@PathParam("id") int id) {
-        return managers.stream()
-                .filter(manager -> manager.id() == id)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Not Found"));
+    public Manager getManager(@PathParam("id") Long id) {
+        return repository.findByIdOptional(id).orElseThrow(NotFoundException::new);
     }
 
     @POST
-    public List<Manager> addManager(Manager manager) {
-        managers = Stream.concat(managers.stream(), Stream.of(manager)).toList();
-        return managers;
+    public ResponseMessage addManager(Manager manager) {
+        repository.persist(manager);
+        return new ResponseMessage("Ok");
     }
 
     @PUT
     @Path("/{id}")
-    public List<Manager> updateManager(@PathParam("id") int id) {
-        // TODO
-        return managers;
+    public ResponseMessage updateManager(@PathParam("id") Long id, Manager manager) {
+        manager.setId(id);
+        boolean isUpdated = repository.update(manager);
+        return new ResponseMessage(Boolean.toString(isUpdated));
     }
 
     @DELETE
     @Path("/{id}")
-    public List<Manager> deleteManager(@PathParam("id") int id) {
-        managers = managers.stream()
-                .dropWhile(manager -> manager.id() == id)
-                .toList();
-        return managers;
+    public ResponseMessage deleteManager(@PathParam("id") Long id) {
+        boolean isDeleted = repository.deleteById(id);
+        return new ResponseMessage(Boolean.toString(isDeleted));
     }
 }
