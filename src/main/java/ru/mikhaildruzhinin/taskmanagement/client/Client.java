@@ -1,7 +1,31 @@
 package ru.mikhaildruzhinin.taskmanagement.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
-public record Client(@Id @GeneratedValue @JsonProperty(access = JsonProperty.Access.READ_ONLY) Long id, String name) {}
+@Entity
+public class Client {
+    @Id
+    @GeneratedValue
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long id;
+    private String name;
+
+    public Client() {
+    }
+
+    public Client(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+}

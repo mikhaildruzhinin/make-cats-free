@@ -23,7 +23,7 @@ public class TaskResource {
   @GET
   @Path("/{id}")
   public Task getTask(@PathParam("id") Long id) {
-    return repository.findByIdOptional(id).orElseThrow(() -> new RuntimeException("Not Found"));
+    return repository.findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 
   @POST
@@ -36,7 +36,7 @@ public class TaskResource {
   @PUT
   @Path("/{id}")
   public Task updateTask(@PathParam("id") Long id, Task task) {
-    Task newTask = new Task(id, task.title(), task.description());
+    Task newTask = new Task(id, task.getTitle(), task.getDescription());
     return repository.update(newTask);
   }
 

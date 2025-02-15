@@ -23,7 +23,7 @@ public class ClientResource {
     @GET
     @Path("/{id}")
     public Client getClient(@PathParam("id") Long id) {
-        return repository.findById(id);
+        return repository.findByIdOptional(id).orElseThrow(NotFoundException::new);
     }
 
     @POST
@@ -36,7 +36,7 @@ public class ClientResource {
     @PUT
     @Path("/{id}")
     public Client updateClient(@PathParam("id") Long id, Client client) {
-        Client newClient = new Client(id, client.name());
+        Client newClient = new Client(id, client.getName());
         return repository.update(newClient);
     }
 
