@@ -14,8 +14,9 @@ public class TaskRepository implements PanacheRepository<Task> {
     public Task update(Task newTask) {
         Optional<Task> optionalTask = findByIdOptional(newTask.getId());
         optionalTask.map(task -> {
-            persist(newTask);
-            return newTask;
+            task.setTitle(newTask.getTitle());
+            task.setDescription(newTask.getDescription());
+            return task;
         });
         return optionalTask.orElseThrow(NotFoundException::new);
     }

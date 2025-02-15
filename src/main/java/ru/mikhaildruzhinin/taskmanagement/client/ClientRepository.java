@@ -14,8 +14,9 @@ public class ClientRepository implements PanacheRepository<Client> {
     public Client update(Client newClient) {
         Optional<Client> optionalClient = findByIdOptional(newClient.getId());
         optionalClient.map(client -> {
-            persist(newClient);
-            return newClient;
+            client.setId(newClient.getId());
+            client.setName(newClient.getName());
+            return client;
         });
         return optionalClient.orElseThrow((NotFoundException::new));
     }
