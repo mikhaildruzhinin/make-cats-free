@@ -30,10 +30,6 @@ public class Client {
     @JoinColumn(name = "manager_id", insertable = false, updatable = false)
     private Manager manager;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "manager_id")
-    private Long managerId;
-
     public Client() {
     }
 
@@ -67,13 +63,5 @@ public class Client {
 
     public void setManager(Manager manager) {
         this.manager = manager;
-    }
-
-    public Long getManagerId() {
-        return managerId;
-    }
-
-    public void setManagerId(Long managerId) {
-        this.managerId = managerId;
     }
 }

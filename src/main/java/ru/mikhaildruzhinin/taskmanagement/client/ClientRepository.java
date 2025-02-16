@@ -16,7 +16,6 @@ public class ClientRepository implements PanacheRepository<Client> {
             client.setId(newClient.getId());
             client.setName(newClient.getName());
             client.setTasks(newClient.getTasks());
-            client.setManagerId(newClient.getManagerId());
             return true;
         });
         return isUpdated.orElse(false);
