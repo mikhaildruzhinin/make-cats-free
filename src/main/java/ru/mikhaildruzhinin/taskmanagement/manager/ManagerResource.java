@@ -1,6 +1,7 @@
 package ru.mikhaildruzhinin.taskmanagement.manager;
 
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import ru.mikhaildruzhinin.taskmanagement.ResponseMessage;
@@ -26,6 +27,7 @@ public class ManagerResource {
     }
 
     @POST
+    @Transactional
     public ResponseMessage addManager(Manager manager) {
         repository.persist(manager);
         return new ResponseMessage("Ok");
@@ -33,6 +35,7 @@ public class ManagerResource {
 
     @PUT
     @Path("/{id}")
+    @Transactional
     public ResponseMessage updateManager(@PathParam("id") Long id, Manager manager) {
         manager.setId(id);
         boolean isUpdated = repository.update(manager);
@@ -41,6 +44,7 @@ public class ManagerResource {
 
     @DELETE
     @Path("/{id}")
+    @Transactional
     public ResponseMessage deleteManager(@PathParam("id") Long id) {
         boolean isDeleted = repository.deleteById(id);
         return new ResponseMessage(Boolean.toString(isDeleted));
