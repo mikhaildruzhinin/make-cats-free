@@ -1,33 +1,38 @@
 package ru.mikhaildruzhinin.taskmanagement.task;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import ru.mikhaildruzhinin.taskmanagement.client.Client;
+
+import java.util.Optional;
 
 @Entity
 public class Task {
     @Id
     @GeneratedValue
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     private String title;
 
     private String description;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", insertable = false, updatable = false)
     private Client client;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "client_id")
     private Long clientId;
 
     public Task() {
     }
+
+    public Task(Long id, String title, String description, Client client, Long clientId) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.client = client;
+        this.clientId = clientId;
+    }
+
 
     public Long getId() {
         return id;
@@ -67,5 +72,14 @@ public class Task {
 
     public void setClientId(Long clientId) {
         this.clientId = clientId;
+    }
+
+    public TaskDto toDto() {
+        return new TaskDto(
+                this.id,
+                this.title,
+                this.description,
+                Optional.ofNullable(this.client)
+        );
     }
 }
