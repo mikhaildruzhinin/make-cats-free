@@ -20,4 +20,8 @@ public class TaskRepository implements PanacheRepository<Task> {
         });
         return optionalUpdated.orElse(false);
     }
+
+    public boolean delete(TaskDto taskDto)  {
+            return false;
+    }
 }

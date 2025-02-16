@@ -16,26 +16,33 @@ public class TaskResource {
   TaskRepository repository;
 
   @GET
-  public List<Task> getTasks() {
-    return repository.listAll();
+  public TasksDto getTasks() {
+    List<TaskDto> tasks = repository.listAll()
+            .stream()
+            .map(Task::toDto)
+            .toList();
+    return new TasksDto(tasks);
   }
 
   @GET
   @Path("/{id}")
-  public Task getTask(@PathParam("id") Long id) {
-    return repository.findByIdOptional(id).orElseThrow(NotFoundException::new);
+  public TaskDto getTask(@PathParam("id") Long id) {
+    Task task = repository.findByIdOptional(id).orElseThrow(NotFoundException::new);
+    return task.toDto();
   }
 
   @POST
   @Transactional
-  public ResponseMessage addTask(Task task) {
+  public ResponseMessage addTask(TaskDto taskDto) {
+    Task task = taskDto.toEntity();
     repository.persist(task);
     return new ResponseMessage("Ok");
   }
 
   @PUT
   @Path("/{id}")
-  public ResponseMessage updateTask(@PathParam("id") Long id, Task task) {
+  public ResponseMessage updateTask(@PathParam("id") Long id, TaskDto taskDto) {
+    Task task = taskDto.toEntity();
     task.setId(id);
     boolean isUpdated = repository.update(task);
     return new ResponseMessage(Boolean.toString(isUpdated));
