@@ -15,7 +15,7 @@ public class ClientRepository implements PanacheRepository<Client> {
         Optional<Boolean> isUpdated = optionalClient.map(client -> {
             client.setId(newClient.getId());
             client.setName(newClient.getName());
-            client.setTasks(newClient.getTasks());
+            client.addTasks(newClient.getTasks());
             return true;
         });
         return isUpdated.orElse(false);

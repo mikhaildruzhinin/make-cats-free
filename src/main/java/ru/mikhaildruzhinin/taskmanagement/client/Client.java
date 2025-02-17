@@ -7,22 +7,19 @@ import jakarta.persistence.*;
 import ru.mikhaildruzhinin.taskmanagement.manager.Manager;
 import ru.mikhaildruzhinin.taskmanagement.task.Task;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Client {
     @Id
     @GeneratedValue
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     private String name;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JsonManagedReference
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Task> tasks = new ArrayList<>();
+    private Set<Task> tasks = new HashSet<>();
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JsonBackReference
@@ -31,6 +28,13 @@ public class Client {
     private Manager manager;
 
     public Client() {
+    }
+
+    public Client(Long id, String name, Set<Task> tasks, Manager manager) {
+        this.id = id;
+        this.name = name;
+        this.tasks = tasks;
+        this.manager = manager;
     }
 
     public Long getId() {
@@ -49,12 +53,24 @@ public class Client {
         this.name = name;
     }
 
-    public List<Task> getTasks() {
+    public Set<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
+    public void addTask(Task task) {
+        tasks.add(task);
+    }
+
+    public void addTasks(Set<Task> tasks) {
+        this.tasks.addAll(tasks);
+    }
+
+    public void removeTask(Task task) {
+        tasks.remove(task);
+    }
+
+    public void removeTasks(Set<Task> tasks) {
+        this.tasks.removeAll(tasks);
     }
 
     public Manager getManager() {
@@ -63,5 +79,9 @@ public class Client {
 
     public void setManager(Manager manager) {
         this.manager = manager;
+    }
+
+    public ClientDto toDto() {
+        return new ClientDto(id, name, Optional.ofNullable(tasks), manager, manager.getId());
     }
 }
