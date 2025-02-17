@@ -5,8 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import ru.mikhaildruzhinin.taskmanagement.client.Client;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 @Entity
 public class Manager {
@@ -20,12 +21,12 @@ public class Manager {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JsonManagedReference
     @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Client> clients = new ArrayList<>();
+    private Set<Client> clients = new HashSet<>();
 
     public Manager() {
     }
 
-    public Manager(Long id, String name, List<Client> clients) {
+    public Manager(Long id, String name, Set<Client> clients) {
         this.id = id;
         this.name = name;
         this.clients = clients;
@@ -47,15 +48,27 @@ public class Manager {
         this.name = name;
     }
 
-    public List<Client> getClients() {
+    public Set<Client> getClients() {
         return clients;
     }
 
-    public void setClients(List<Client> clients) {
-        this.clients = clients;
+    public void addClient(Client client) {
+        clients.add(client);
+    }
+
+    public void addClients(Set<Client> clients) {
+        this.clients.addAll(clients);
+    }
+
+    public void removeClient(Client client) {
+        clients.remove(client);
+    }
+
+    public void removeClients(Set<Client> clients) {
+        this.clients.removeAll(clients);
     }
 
     public ManagerDto toDto() {
-        return new ManagerDto(id, name, clients);
+        return new ManagerDto(id, name, Optional.ofNullable(clients));
     }
 }

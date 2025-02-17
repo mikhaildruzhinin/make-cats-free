@@ -4,6 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 @ApplicationScoped
@@ -14,6 +15,7 @@ public class ManagerRepository implements PanacheRepository<Manager> {
         Optional<Manager> optionalManager = findByIdOptional(id);
         Optional<Boolean> isUpdated = optionalManager.map(manager -> {
             manager.setName(managerDto.name());
+            manager.addClients(managerDto.clients().orElse(new HashSet<>()));
             return true;
         });
         return isUpdated.orElse(false);

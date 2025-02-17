@@ -6,7 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import ru.mikhaildruzhinin.taskmanagement.client.Client;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public record ManagerDto(
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -17,9 +18,9 @@ public record ManagerDto(
         String name,
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         @JsonManagedReference
-        List<Client> clients
+        Optional<Set<Client>> clients
 ) {
     public Manager toEntity() {
-        return new Manager(id, name, clients);
+        return new Manager(id, name, clients.orElse(null));
     }
 }
