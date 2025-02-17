@@ -9,13 +9,16 @@ import java.util.Optional;
 
 public record TaskDto(
         @JsonProperty(access = JsonProperty.Access.READ_ONLY) Long id,
-        @NotBlank(message="Title may not be blank")
+        @NotBlank()
         String title,
-        @NotBlank(message="Description may not be blank")
+        @NotBlank()
         String description,
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         @JsonBackReference
-        Optional<Client> client
+        Optional<Client> client,
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+        @NotBlank()
+        Long clientId
 ) {
         public Task toEntity() {
                 return new Task(
@@ -23,7 +26,7 @@ public record TaskDto(
                         this.title,
                         this.description,
                         this.client.orElse(null),
-                        this.client.map(Client::getId).orElse(null)
+                        this.clientId
                 );
         }
 }

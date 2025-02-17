@@ -15,13 +15,9 @@ public class TaskRepository implements PanacheRepository<Task> {
         Optional<Boolean> optionalUpdated = optionalTask.map(task -> {
             task.setTitle(newTask.getTitle());
             task.setDescription(newTask.getDescription());
-            task.setClientId(newTask.getClientId());
+            task.setClient(newTask.getClient());
             return true;
         });
         return optionalUpdated.orElse(false);
-    }
-
-    public boolean delete(TaskDto taskDto)  {
-            return false;
     }
 }

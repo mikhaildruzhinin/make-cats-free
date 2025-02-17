@@ -19,9 +19,6 @@ public class Task {
     @JoinColumn(name = "client_id", insertable = false, updatable = false)
     private Client client;
 
-    @Column(name = "client_id")
-    private Long clientId;
-
     public Task() {
     }
 
@@ -30,9 +27,7 @@ public class Task {
         this.title = title;
         this.description = description;
         this.client = client;
-        this.clientId = clientId;
     }
-
 
     public Long getId() {
         return id;
@@ -48,10 +43,6 @@ public class Task {
 
     public Client getClient() {
         return client;
-    }
-
-    public Long getClientId() {
-        return clientId;
     }
 
     public void setId(Long id) {
@@ -70,16 +61,13 @@ public class Task {
         this.client = client;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
-    }
-
     public TaskDto toDto() {
         return new TaskDto(
                 this.id,
                 this.title,
                 this.description,
-                Optional.ofNullable(this.client)
+                Optional.ofNullable(this.client),
+                Optional.ofNullable(this.client).map(Client::getId).orElse(-1L)
         );
     }
 }
