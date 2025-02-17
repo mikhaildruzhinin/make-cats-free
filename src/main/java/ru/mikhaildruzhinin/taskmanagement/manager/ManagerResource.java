@@ -8,6 +8,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import ru.mikhaildruzhinin.taskmanagement.ResponseMessage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Path("/managers")
 @Tag(name = "Managers")
@@ -17,17 +18,17 @@ public class ManagerResource {
     ManagerRepository repository;
 
     @GET
-    public ManagersDto getManagers() {
-        List<ManagerDto> managers =  repository.listAll()
+    public ManagersResponseDto getManagers() {
+        List<ManagerResponseDto> managers =  repository.listAll()
                 .stream()
                 .map(Manager::toDto)
                 .toList();
-        return new ManagersDto(managers);
+        return new ManagersResponseDto(managers);
     }
 
     @GET
     @Path("/{id}")
-    public ManagerDto getManager(@PathParam("id") Long id) {
+    public ManagerResponseDto getManager(@PathParam("id") Long id) {
         return repository.findByIdOptional(id)
                 .orElseThrow(NotFoundException::new)
                 .toDto();
@@ -35,17 +36,15 @@ public class ManagerResource {
 
     @POST
     @Transactional
-    public ResponseMessage addManager(@Valid ManagerDto managerDto) {
-        System.out.println(managerDto.name());
-        repository.persist(managerDto.toEntity());
+    public ResponseMessage addManager(@Valid ManagerRequestDto dto) {
+        repository.persist(dto.toEntity());
         return new ResponseMessage("Ok");
     }
 
     @PUT
     @Path("/{id}")
-    @Transactional
-    public ResponseMessage updateManager(@PathParam("id") Long id, @Valid ManagerDto managerDto) {
-        boolean isUpdated = repository.update(id, managerDto);
+    public ResponseMessage updateManager(@PathParam("id") Long id, @Valid ManagerRequestDto dto) {
+        boolean isUpdated = repository.update(id, dto, Optional.empty()); // TODO add clients
         return new ResponseMessage(Boolean.toString(isUpdated));
     }
 

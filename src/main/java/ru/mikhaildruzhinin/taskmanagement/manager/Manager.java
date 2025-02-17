@@ -26,10 +26,8 @@ public class Manager {
     public Manager() {
     }
 
-    public Manager(Long id, String name, Set<Client> clients) {
-        this.id = id;
+    public Manager(String name) {
         this.name = name;
-        this.clients = clients;
     }
 
     public Long getId() {
@@ -68,7 +66,7 @@ public class Manager {
         this.clients.removeAll(clients);
     }
 
-    public ManagerDto toDto() {
-        return new ManagerDto(id, name, Optional.ofNullable(clients));
+    public ManagerResponseDto toDto() {
+        return new ManagerResponseDto(id, name, Optional.ofNullable(clients));
     }
 }
