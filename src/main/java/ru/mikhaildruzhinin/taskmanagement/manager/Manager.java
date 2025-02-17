@@ -13,7 +13,6 @@ public class Manager {
 
     @Id
     @GeneratedValue
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     private String name;
@@ -24,6 +23,12 @@ public class Manager {
     private List<Client> clients = new ArrayList<>();
 
     public Manager() {
+    }
+
+    public Manager(Long id, String name, List<Client> clients) {
+        this.id = id;
+        this.name = name;
+        this.clients = clients;
     }
 
     public Long getId() {
@@ -48,5 +53,9 @@ public class Manager {
 
     public void setClients(List<Client> clients) {
         this.clients = clients;
+    }
+
+    public ManagerDto toDto() {
+        return new ManagerDto(id, name, clients);
     }
 }

@@ -2,6 +2,7 @@ package ru.mikhaildruzhinin.taskmanagement.manager;
 
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import ru.mikhaildruzhinin.taskmanagement.ResponseMessage;
@@ -16,29 +17,35 @@ public class ManagerResource {
     ManagerRepository repository;
 
     @GET
-    public List<Manager> getManagers() {
-        return repository.listAll();
+    public ManagersDto getManagers() {
+        List<ManagerDto> managers =  repository.listAll()
+                .stream()
+                .map(Manager::toDto)
+                .toList();
+        return new ManagersDto(managers);
     }
 
     @GET
     @Path("/{id}")
-    public Manager getManager(@PathParam("id") Long id) {
-        return repository.findByIdOptional(id).orElseThrow(NotFoundException::new);
+    public ManagerDto getManager(@PathParam("id") Long id) {
+        return repository.findByIdOptional(id)
+                .orElseThrow(NotFoundException::new)
+                .toDto();
     }
 
     @POST
     @Transactional
-    public ResponseMessage addManager(Manager manager) {
-        repository.persist(manager);
+    public ResponseMessage addManager(@Valid ManagerDto managerDto) {
+        System.out.println(managerDto.name());
+        repository.persist(managerDto.toEntity());
         return new ResponseMessage("Ok");
     }
 
     @PUT
     @Path("/{id}")
     @Transactional
-    public ResponseMessage updateManager(@PathParam("id") Long id, Manager manager) {
-        manager.setId(id);
-        boolean isUpdated = repository.update(manager);
+    public ResponseMessage updateManager(@PathParam("id") Long id, @Valid ManagerDto managerDto) {
+        boolean isUpdated = repository.update(id, managerDto);
         return new ResponseMessage(Boolean.toString(isUpdated));
     }
 

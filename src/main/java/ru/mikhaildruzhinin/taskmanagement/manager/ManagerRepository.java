@@ -10,11 +10,10 @@ import java.util.Optional;
 public class ManagerRepository implements PanacheRepository<Manager> {
 
     @Transactional
-    public boolean update(Manager newManager) {
-        Optional<Manager> optionalManager = findByIdOptional(newManager.getId());
+    public boolean update(Long id, ManagerDto managerDto) {
+        Optional<Manager> optionalManager = findByIdOptional(id);
         Optional<Boolean> isUpdated = optionalManager.map(manager -> {
-            manager.setName(newManager.getName());
-            manager.setClients(newManager.getClients());
+            manager.setName(managerDto.name());
             return true;
         });
         return isUpdated.orElse(false);
