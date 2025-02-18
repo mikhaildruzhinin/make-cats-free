@@ -16,28 +16,35 @@ public class ClientResource {
     ClientRepository repository;
 
     @GET
-    public List<Client> getClients() {
-        return repository.listAll();
+    public ClientsResponseDto getClients() {
+        List<ClientResponseDto> clients = repository.listAll()
+                .stream()
+                .map(Client::toDto)
+                .toList();
+        return new ClientsResponseDto(clients);
     }
 
     @GET
     @Path("/{id}")
-    public Client getClient(@PathParam("id") Long id) {
-        return repository.findByIdOptional(id).orElseThrow(NotFoundException::new);
+    public ClientResponseDto getClient(@PathParam("id") Long id) {
+        return repository.findByIdOptional(id)
+                .map(Client::toDto)
+                .orElseThrow(NotFoundException::new);
     }
 
     @POST
     @Transactional
-    public ResponseMessage addClient(Client client) {
-        repository.persist(client);
+    public ResponseMessage addClient(ClientRequestDto dto) {
+        // TODO get manager
+        repository.persist(dto.toEntity());
         return new ResponseMessage("Ok");
     }
 
     @PUT
     @Path("/{id}")
-    public ResponseMessage updateClient(@PathParam("id") Long id, Client client) {
-        client.setId(id);
-        boolean isUpdated = repository.update(client);
+    public ResponseMessage updateClient(@PathParam("id") Long id, ClientRequestDto dto) {
+        // TODO get manager
+        boolean isUpdated = repository.update(id, dto);
         return new ResponseMessage(Boolean.toString(isUpdated));
     }
 

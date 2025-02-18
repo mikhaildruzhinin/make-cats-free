@@ -1,8 +1,5 @@
 package ru.mikhaildruzhinin.taskmanagement.client;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import ru.mikhaildruzhinin.taskmanagement.manager.Manager;
 import ru.mikhaildruzhinin.taskmanagement.task.Task;
@@ -17,12 +14,9 @@ public class Client {
 
     private String name;
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Task> tasks = new HashSet<>();
+    final private Set<Task> tasks = new HashSet<>();
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id", insertable = false, updatable = false)
     private Manager manager;
@@ -30,11 +24,8 @@ public class Client {
     public Client() {
     }
 
-    public Client(Long id, String name, Set<Task> tasks, Manager manager) {
-        this.id = id;
+    public Client(String name) {
         this.name = name;
-        this.tasks = tasks;
-        this.manager = manager;
     }
 
     public Long getId() {
@@ -81,7 +72,7 @@ public class Client {
         this.manager = manager;
     }
 
-    public ClientDto toDto() {
-        return new ClientDto(id, name, Optional.ofNullable(tasks), manager, manager.getId());
+    public ClientResponseDto toDto() {
+        return new ClientResponseDto(id, name, tasks, Optional.ofNullable(manager));
     }
 }

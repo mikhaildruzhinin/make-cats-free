@@ -10,12 +10,12 @@ import java.util.Optional;
 public class ClientRepository implements PanacheRepository<Client> {
 
     @Transactional
-    public boolean update(Client newClient) {
-        Optional<Client> optionalClient = findByIdOptional(newClient.getId());
+    public boolean update(Long id, ClientRequestDto dto) {
+        Optional<Client> optionalClient = findByIdOptional(id);
         Optional<Boolean> isUpdated = optionalClient.map(client -> {
-            client.setId(newClient.getId());
-            client.setName(newClient.getName());
-            client.addTasks(newClient.getTasks());
+            client.setName(dto.name());
+            // TODO tasks
+            // TODO manager
             return true;
         });
         return isUpdated.orElse(false);
