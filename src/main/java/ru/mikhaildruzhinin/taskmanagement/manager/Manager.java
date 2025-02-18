@@ -1,12 +1,10 @@
 package ru.mikhaildruzhinin.taskmanagement.manager;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import ru.mikhaildruzhinin.taskmanagement.client.Client;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -18,10 +16,9 @@ public class Manager {
 
     private String name;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JsonManagedReference
     @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Client> clients = new HashSet<>();
+    final private Set<Client> clients = new HashSet<>();
 
     public Manager() {
     }
@@ -67,6 +64,6 @@ public class Manager {
     }
 
     public ManagerResponseDto toDto() {
-        return new ManagerResponseDto(id, name, Optional.ofNullable(clients));
+        return new ManagerResponseDto(id, name, clients);
     }
 }
