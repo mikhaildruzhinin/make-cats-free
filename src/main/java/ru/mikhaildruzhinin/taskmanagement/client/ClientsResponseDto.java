@@ -1,6 +1,10 @@
 package ru.mikhaildruzhinin.taskmanagement.client;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
-public record ClientsResponseDto(List<ClientResponseDto> clients) {
+public record ClientsResponseDto(
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY) List<ClientResponseDto> clients
+) {
 }

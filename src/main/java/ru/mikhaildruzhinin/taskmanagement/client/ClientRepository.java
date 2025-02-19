@@ -23,8 +23,8 @@ public class ClientRepository implements PanacheRepository<Client> {
     }
 
     @Transactional
-    public void save(Client client, Optional<Manager> optionalManager) {
-        optionalManager.ifPresent(client::setManager);
+    public void save(Client client, Manager manager) {
+        client.setManager(manager);
         persist(client);
     }
 }

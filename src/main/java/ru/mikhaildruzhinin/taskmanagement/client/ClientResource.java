@@ -44,8 +44,10 @@ public class ClientResource {
     public Response addClient(ClientRequestDto dto) {
         Client client = mapper.toEntity(dto);
         Optional<Manager> optionalManager = managerRepository.findByIdOptional(dto.managerId());
-        clientRepository.save(client, optionalManager);
-        return Response.noContent().build();
+        return optionalManager.map(manager -> {
+            clientRepository.save(client, manager);
+            return Response.noContent().build();
+        }).orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 
     @PUT
