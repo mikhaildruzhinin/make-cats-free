@@ -3,8 +3,8 @@ package ru.mikhaildruzhinin.taskmanagement.task;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import ru.mikhaildruzhinin.taskmanagement.ResponseMessage;
 
 import java.util.List;
 
@@ -26,33 +26,41 @@ public class TaskResource {
 
   @GET
   @Path("/{id}")
-  public TaskDto getTask(@PathParam("id") Long id) {
+  public Response getTask(@PathParam("id") Long id) {
     Task task = repository.findByIdOptional(id).orElseThrow(NotFoundException::new);
-    return task.toDto();
+    return Response.ok(task.toDto()).build();
   }
 
   @POST
   @Transactional
-  public ResponseMessage addTask(TaskDto taskDto) {
+  public Response addTask(TaskDto taskDto) {
     Task task = taskDto.toEntity();
     repository.persist(task);
-    return new ResponseMessage("Ok");
+    return Response.noContent().build();
   }
 
   @PUT
   @Path("/{id}")
-  public ResponseMessage updateTask(@PathParam("id") Long id, TaskDto taskDto) {
+  public Response updateTask(@PathParam("id") Long id, TaskDto taskDto) {
     Task task = taskDto.toEntity();
     task.setId(id);
     boolean isUpdated = repository.update(task);
-    return new ResponseMessage(Boolean.toString(isUpdated));
+    if (isUpdated) {
+      return Response.ok().build();
+    } else {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
   }
 
   @DELETE
   @Path("/{id}")
   @Transactional
-  public ResponseMessage deleteTask(@PathParam("id") Long id) {
+  public Response deleteTask(@PathParam("id") Long id) {
     boolean isDeleted = repository.deleteById(id);
-    return new ResponseMessage(Boolean.toString(isDeleted));
+    if (isDeleted) {
+      return Response.ok().build();
+    } else {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
   }
 }

@@ -3,8 +3,8 @@ package ru.mikhaildruzhinin.taskmanagement.client;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import ru.mikhaildruzhinin.taskmanagement.ResponseMessage;
 import ru.mikhaildruzhinin.taskmanagement.manager.Manager;
 import ru.mikhaildruzhinin.taskmanagement.manager.ManagerRepository;
 
@@ -22,43 +22,53 @@ public class ClientResource {
     ManagerRepository managerRepository;
 
     @Inject
-    ClientMapper clientMapper;
+    ClientMapper mapper;
 
     @GET
-    public ClientsResponseDto getClients() {
-        List<ClientResponseDto> clients = clientMapper.toDtoList(clientRepository.listAll());
-        return new ClientsResponseDto(clients);
+    public Response getClients() {
+        List<ClientResponseDto> clients = mapper.toDtoList(clientRepository.listAll());
+        Object dto = new ClientsResponseDto(clients);
+        return Response.ok(dto).build();
     }
 
     @GET
     @Path("/{id}")
-    public ClientResponseDto getClient(@PathParam("id") Long id) {
-        return clientRepository.findByIdOptional(id)
-                .map(client -> clientMapper.toDto(client))
-                .orElseThrow(NotFoundException::new);
+    public Response getClient(@PathParam("id") Long id) {
+        Optional<ClientResponseDto> optionalDto = clientRepository.findByIdOptional(id)
+                .map(client -> mapper.toDto(client));
+        return optionalDto.map(dto -> Response.ok(dto).build())
+                .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 
     @POST
-    public ResponseMessage addClient(ClientRequestDto dto) {
-        Client client = clientMapper.toEntity(dto);
+    public Response addClient(ClientRequestDto dto) {
+        Client client = mapper.toEntity(dto);
         Optional<Manager> optionalManager = managerRepository.findByIdOptional(dto.managerId());
         clientRepository.save(client, optionalManager);
-        return new ResponseMessage("Ok");
+        return Response.noContent().build();
     }
 
     @PUT
     @Path("/{id}")
-    public ResponseMessage updateClient(@PathParam("id") Long id, ClientRequestDto dto) {
+    public Response updateClient(@PathParam("id") Long id, ClientRequestDto dto) {
         Optional<Manager> optionalManager = managerRepository.findByIdOptional(dto.managerId());
         boolean isUpdated = clientRepository.update(id, dto);
-        return new ResponseMessage(Boolean.toString(isUpdated));
+        if (isUpdated) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     @DELETE
     @Path("/{id}")
     @Transactional
-    public ResponseMessage deleteClient(@PathParam("id") Long id) {
+    public Response deleteClient(@PathParam("id") Long id) {
         boolean isDeleted = clientRepository.deleteById(id);
-        return new ResponseMessage(Boolean.toString(isDeleted));
+        if (isDeleted) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 }

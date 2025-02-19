@@ -4,8 +4,8 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import ru.mikhaildruzhinin.taskmanagement.ResponseMessage;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,45 +18,55 @@ public class ManagerResource {
     ManagerRepository repository;
 
     @Inject
-    ManagerMapper managerMapper;
+    ManagerMapper mapper;
 
     @GET
-    public ManagersResponseDto getManagers() {
+    public Response getManagers() {
         List<ManagerResponseDto> managers =  repository.listAll()
                 .stream()
-                .map(manager -> managerMapper.toDto(manager))
+                .map(manager -> mapper.toDto(manager))
                 .toList();
-        return new ManagersResponseDto(managers);
+        ManagersResponseDto dto = new ManagersResponseDto(managers);
+        return Response.ok(dto).build();
     }
 
     @GET
     @Path("/{id}")
-    public ManagerResponseDto getManager(@PathParam("id") Long id) {
+    public Response getManager(@PathParam("id") Long id) {
         // TODO use .map()
-        Manager manager = repository.findByIdOptional(id).orElseThrow(NotFoundException::new);
-        return managerMapper.toDto(manager);
+        Optional<ManagerResponseDto> optionalDto = repository.findByIdOptional(id).map(manager -> mapper.toDto(manager));
+        return optionalDto.map(dto -> Response.ok(dto).build())
+                .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 
     @POST
     @Transactional
-    public ResponseMessage addManager(@Valid ManagerRequestDto dto) {
-        Manager manager = managerMapper.toEntity(dto);
+    public Response addManager(@Valid ManagerRequestDto dto) {
+        Manager manager = mapper.toEntity(dto);
         repository.persist(manager);
-        return new ResponseMessage("Ok");
+        return Response.noContent().build();
     }
 
     @PUT
     @Path("/{id}")
-    public ResponseMessage updateManager(@PathParam("id") Long id, @Valid ManagerRequestDto dto) {
+    public Response updateManager(@PathParam("id") Long id, @Valid ManagerRequestDto dto) {
         boolean isUpdated = repository.update(id, dto, Optional.empty()); // TODO add clients
-        return new ResponseMessage(Boolean.toString(isUpdated));
+        if (isUpdated) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     @DELETE
     @Path("/{id}")
     @Transactional
-    public ResponseMessage deleteManager(@PathParam("id") Long id) {
+    public Response deleteManager(@PathParam("id") Long id) {
         boolean isDeleted = repository.deleteById(id);
-        return new ResponseMessage(Boolean.toString(isDeleted));
+        if (isDeleted) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 }
