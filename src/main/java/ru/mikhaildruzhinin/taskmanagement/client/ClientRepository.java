@@ -23,8 +23,7 @@ public class ClientRepository implements PanacheRepository<Client> {
     }
 
     @Transactional
-    public void save(ClientRequestDto clientRequestDto, Optional<Manager> optionalManager) {
-        Client client = clientRequestDto.toEntity();
+    public void save(Client client, Optional<Manager> optionalManager) {
         optionalManager.ifPresent(client::setManager);
         persist(client);
     }

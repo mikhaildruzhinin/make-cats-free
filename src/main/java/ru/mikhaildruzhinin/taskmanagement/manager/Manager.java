@@ -64,11 +64,4 @@ public class Manager {
     public void removeClients(Set<Client> clients) {
         this.clients.removeAll(clients);
     }
-
-    public ManagerResponseDto toDto() {
-        Set<ClientResponseDto> clients = this.clients.stream()
-                .map(ClientResponseDto::new)
-                .collect(Collectors.toSet());
-        return new ManagerResponseDto(id, name, clients);
-    }
 }

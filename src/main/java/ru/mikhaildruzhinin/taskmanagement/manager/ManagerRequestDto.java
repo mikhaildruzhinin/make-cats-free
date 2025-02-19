@@ -10,7 +10,4 @@ public record ManagerRequestDto(
         @Schema(defaultValue = "John Doe")
         String name
 ) {
-    public Manager toEntity() {
-        return new Manager(name);
-    }
 }

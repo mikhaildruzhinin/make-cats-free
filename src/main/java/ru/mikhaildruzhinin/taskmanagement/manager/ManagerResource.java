@@ -17,11 +17,14 @@ public class ManagerResource {
     @Inject
     ManagerRepository repository;
 
+    @Inject
+    ManagerMapper managerMapper;
+
     @GET
     public ManagersResponseDto getManagers() {
         List<ManagerResponseDto> managers =  repository.listAll()
                 .stream()
-                .map(Manager::toDto)
+                .map(manager -> managerMapper.toDto(manager))
                 .toList();
         return new ManagersResponseDto(managers);
     }
@@ -29,15 +32,16 @@ public class ManagerResource {
     @GET
     @Path("/{id}")
     public ManagerResponseDto getManager(@PathParam("id") Long id) {
-        return repository.findByIdOptional(id)
-                .orElseThrow(NotFoundException::new)
-                .toDto();
+        // TODO use .map()
+        Manager manager = repository.findByIdOptional(id).orElseThrow(NotFoundException::new);
+        return managerMapper.toDto(manager);
     }
 
     @POST
     @Transactional
     public ResponseMessage addManager(@Valid ManagerRequestDto dto) {
-        repository.persist(dto.toEntity());
+        Manager manager = managerMapper.toEntity(dto);
+        repository.persist(manager);
         return new ResponseMessage("Ok");
     }
 

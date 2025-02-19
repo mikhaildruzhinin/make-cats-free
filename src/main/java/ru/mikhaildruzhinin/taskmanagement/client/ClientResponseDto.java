@@ -19,10 +19,6 @@ public record ClientResponseDto(
         Set<Task> tasks,
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         @JsonBackReference
-        Optional<ManagerResponseDto> manager
+        ManagerResponseDto manager
 ) {
-
-        public ClientResponseDto(Client client) {
-                this(client.getId(), client.getName(), client.getTasks(), Optional.ofNullable(client.getManager().toDto()));
-        }
 }

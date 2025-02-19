@@ -21,12 +21,12 @@ public class ClientResource {
     @Inject
     ManagerRepository managerRepository;
 
+    @Inject
+    ClientMapper clientMapper;
+
     @GET
     public ClientsResponseDto getClients() {
-        List<ClientResponseDto> clients = clientRepository.listAll()
-                .stream()
-                .map(ClientResponseDto::new)
-                .toList();
+        List<ClientResponseDto> clients = clientMapper.toDtoList(clientRepository.listAll());
         return new ClientsResponseDto(clients);
     }
 
@@ -34,21 +34,22 @@ public class ClientResource {
     @Path("/{id}")
     public ClientResponseDto getClient(@PathParam("id") Long id) {
         return clientRepository.findByIdOptional(id)
-                .map(ClientResponseDto::new)
+                .map(client -> clientMapper.toDto(client))
                 .orElseThrow(NotFoundException::new);
     }
 
     @POST
     public ResponseMessage addClient(ClientRequestDto dto) {
-        Optional<Manager> optionalManager = dto.managerId().flatMap(managerId -> managerRepository.findByIdOptional(managerId));
-        clientRepository.save(dto, optionalManager);
+        Client client = clientMapper.toEntity(dto);
+        Optional<Manager> optionalManager = managerRepository.findByIdOptional(dto.managerId());
+        clientRepository.save(client, optionalManager);
         return new ResponseMessage("Ok");
     }
 
     @PUT
     @Path("/{id}")
     public ResponseMessage updateClient(@PathParam("id") Long id, ClientRequestDto dto) {
-        Optional<Manager> optionalManager = dto.managerId().flatMap(managerId -> managerRepository.findByIdOptional(managerId));
+        Optional<Manager> optionalManager = managerRepository.findByIdOptional(dto.managerId());
         boolean isUpdated = clientRepository.update(id, dto);
         return new ResponseMessage(Boolean.toString(isUpdated));
     }
