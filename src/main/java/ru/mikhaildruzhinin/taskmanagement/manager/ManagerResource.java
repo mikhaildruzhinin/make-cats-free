@@ -26,14 +26,12 @@ public class ManagerResource {
                 .stream()
                 .map(manager -> mapper.toDto(manager))
                 .toList();
-        ManagersResponseDto dto = new ManagersResponseDto(managers);
-        return Response.ok(dto).build();
+        return Response.ok(new ManagersResponseDto(managers)).build();
     }
 
     @GET
     @Path("/{id}")
     public Response getManager(@PathParam("id") Long id) {
-        // TODO use .map()
         Optional<ManagerResponseDto> optionalDto = repository.findByIdOptional(id).map(manager -> mapper.toDto(manager));
         return optionalDto.map(dto -> Response.ok(dto).build())
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());
