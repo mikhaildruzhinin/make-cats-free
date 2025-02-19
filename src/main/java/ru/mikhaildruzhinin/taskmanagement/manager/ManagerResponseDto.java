@@ -3,7 +3,7 @@ package ru.mikhaildruzhinin.taskmanagement.manager;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import ru.mikhaildruzhinin.taskmanagement.client.Client;
+import ru.mikhaildruzhinin.taskmanagement.client.ClientResponseDto;
 
 import java.util.Set;
 
@@ -16,6 +16,6 @@ public record ManagerResponseDto(
         String name,
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         @JsonManagedReference
-        Set<Client> clients
+        Set<ClientResponseDto> clients
 ) {
 }
