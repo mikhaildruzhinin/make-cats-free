@@ -5,21 +5,27 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import ru.mikhaildruzhinin.taskmanagement.ResponseMessage;
+import ru.mikhaildruzhinin.taskmanagement.manager.Manager;
+import ru.mikhaildruzhinin.taskmanagement.manager.ManagerRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Path("/clients")
 @Tag(name = "Clients")
 public class ClientResource {
 
     @Inject
-    ClientRepository repository;
+    ClientRepository clientRepository;
+
+    @Inject
+    ManagerRepository managerRepository;
 
     @GET
     public ClientsResponseDto getClients() {
-        List<ClientResponseDto> clients = repository.listAll()
+        List<ClientResponseDto> clients = clientRepository.listAll()
                 .stream()
-                .map(Client::toDto)
+                .map(ClientResponseDto::new)
                 .toList();
         return new ClientsResponseDto(clients);
     }
@@ -27,24 +33,23 @@ public class ClientResource {
     @GET
     @Path("/{id}")
     public ClientResponseDto getClient(@PathParam("id") Long id) {
-        return repository.findByIdOptional(id)
-                .map(Client::toDto)
+        return clientRepository.findByIdOptional(id)
+                .map(ClientResponseDto::new)
                 .orElseThrow(NotFoundException::new);
     }
 
     @POST
-    @Transactional
     public ResponseMessage addClient(ClientRequestDto dto) {
-        // TODO get manager
-        repository.persist(dto.toEntity());
+        Optional<Manager> optionalManager = dto.managerId().flatMap(managerId -> managerRepository.findByIdOptional(managerId));
+        clientRepository.save(dto, optionalManager);
         return new ResponseMessage("Ok");
     }
 
     @PUT
     @Path("/{id}")
     public ResponseMessage updateClient(@PathParam("id") Long id, ClientRequestDto dto) {
-        // TODO get manager
-        boolean isUpdated = repository.update(id, dto);
+        Optional<Manager> optionalManager = dto.managerId().flatMap(managerId -> managerRepository.findByIdOptional(managerId));
+        boolean isUpdated = clientRepository.update(id, dto);
         return new ResponseMessage(Boolean.toString(isUpdated));
     }
 
@@ -52,7 +57,7 @@ public class ClientResource {
     @Path("/{id}")
     @Transactional
     public ResponseMessage deleteClient(@PathParam("id") Long id) {
-        boolean isDeleted = repository.deleteById(id);
+        boolean isDeleted = clientRepository.deleteById(id);
         return new ResponseMessage(Boolean.toString(isDeleted));
     }
 }

@@ -18,7 +18,7 @@ public class Client {
     final private Set<Task> tasks = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id", insertable = false, updatable = false)
+    @JoinColumn(name = "manager_id")
     private Manager manager;
 
     public Client() {
@@ -70,9 +70,5 @@ public class Client {
 
     public void setManager(Manager manager) {
         this.manager = manager;
-    }
-
-    public ClientResponseDto toDto() {
-        return new ClientResponseDto(id, name, tasks, Optional.ofNullable(manager));
     }
 }
