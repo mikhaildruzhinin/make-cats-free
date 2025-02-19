@@ -3,11 +3,9 @@ package ru.mikhaildruzhinin.taskmanagement.manager;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import ru.mikhaildruzhinin.taskmanagement.client.Client;
-import ru.mikhaildruzhinin.taskmanagement.client.ClientResponseDto;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 public class Manager {

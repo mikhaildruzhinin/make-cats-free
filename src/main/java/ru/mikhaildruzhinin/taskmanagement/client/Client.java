@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import ru.mikhaildruzhinin.taskmanagement.manager.Manager;
 import ru.mikhaildruzhinin.taskmanagement.task.Task;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Client {
