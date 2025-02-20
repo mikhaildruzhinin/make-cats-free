@@ -22,11 +22,7 @@ public class Client {
     @JoinColumn(name = "manager_id")
     private Manager manager;
 
-    public Client() {
-    }
-
-    public Client(String name) {
-        this.name = name;
+    protected Client() {
     }
 
     public Long getId() {

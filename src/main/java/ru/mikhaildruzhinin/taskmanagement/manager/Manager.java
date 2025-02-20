@@ -20,11 +20,7 @@ public class Manager {
     @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
     final private Set<Client> clients = new HashSet<>();
 
-    public Manager() {
-    }
-
-    public Manager(String name) {
-        this.name = name;
+    protected Manager() {
     }
 
     public Long getId() {

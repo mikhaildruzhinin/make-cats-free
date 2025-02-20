@@ -3,6 +3,7 @@ package ru.mikhaildruzhinin.taskmanagement.client;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import ru.mikhaildruzhinin.taskmanagement.manager.Manager;
@@ -13,6 +14,8 @@ import java.util.Optional;
 
 @Path("/clients")
 @Tag(name = "Clients")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class ClientResource {
 
     @Inject
@@ -54,8 +57,8 @@ public class ClientResource {
     @Path("/{id}")
     public Response updateClient(@PathParam("id") Long id, ClientRequestDto dto) {
         Optional<Manager> optionalManager = managerRepository.findByIdOptional(dto.managerId());
-        boolean isUpdated = clientRepository.update(id, dto);
-        if (isUpdated) {
+        Optional<Boolean> isUpdated = optionalManager.map(manager -> clientRepository.update(id, dto, manager));
+        if (isUpdated.orElse(false)) {
             return Response.ok().build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();

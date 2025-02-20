@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -12,6 +13,8 @@ import java.util.Optional;
 
 @Path("/managers")
 @Tag(name = "Managers")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class ManagerResource {
 
     @Inject
@@ -22,8 +25,7 @@ public class ManagerResource {
 
     @GET
     public Response getManagers() {
-        List<ManagerResponseDto> managers =  repository.listAll()
-                .stream()
+        List<ManagerResponseDto> managers =  repository.streamAll()
                 .map(manager -> mapper.toDto(manager))
                 .toList();
         return Response.ok(new ManagersResponseDto(managers)).build();
@@ -48,7 +50,7 @@ public class ManagerResource {
     @PUT
     @Path("/{id}")
     public Response updateManager(@PathParam("id") Long id, @Valid ManagerRequestDto dto) {
-        boolean isUpdated = repository.update(id, dto, Optional.empty()); // TODO add clients
+        boolean isUpdated = repository.update(id, dto);
         if (isUpdated) {
             return Response.ok().build();
         } else {
