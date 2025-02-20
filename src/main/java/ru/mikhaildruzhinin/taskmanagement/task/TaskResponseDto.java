@@ -2,7 +2,7 @@ package ru.mikhaildruzhinin.taskmanagement.task;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import ru.mikhaildruzhinin.taskmanagement.client.Client;
+import ru.mikhaildruzhinin.taskmanagement.client.ClientResponseDto;
 
 public record TaskResponseDto(
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -13,6 +13,6 @@ public record TaskResponseDto(
         String description,
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         @JsonBackReference
-        Client client
+        ClientResponseDto client
 ) {
 }

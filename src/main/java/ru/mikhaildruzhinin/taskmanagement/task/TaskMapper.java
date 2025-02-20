@@ -1,14 +1,14 @@
 package ru.mikhaildruzhinin.taskmanagement.task;
 
-import org.mapstruct.IterableMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
+import ru.mikhaildruzhinin.taskmanagement.MappingConfig;
 import ru.mikhaildruzhinin.taskmanagement.client.ClientMapper;
+import ru.mikhaildruzhinin.taskmanagement.manager.ManagerMapper;
 
+import java.util.List;
 import java.util.Set;
 
-@Mapper(uses = ClientMapper.class, componentModel = "cdi")
+@Mapper(uses = {ClientMapper.class, ManagerMapper.class}, config = MappingConfig.class)
 public interface TaskMapper {
 
     @Mapping(target = "id", expression = "java(null)")
@@ -22,6 +22,9 @@ public interface TaskMapper {
     @Named("TaskIgnoreClient")
     @Mapping(target = "client", ignore = true)
     TaskResponseDto toDtoTaskIgnoreClient(Task task);
+
+    @IterableMapping(qualifiedByName = "Task")
+    List<TaskResponseDto> toDtoList(List<Task> tasks);
 
     @Named("Task")
     @Mapping(target = "client", qualifiedByName = "ClientIgnoreTasks")

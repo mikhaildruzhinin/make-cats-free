@@ -1,16 +1,14 @@
 package ru.mikhaildruzhinin.taskmanagement.client;
 
-import org.mapstruct.IterableMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
+import ru.mikhaildruzhinin.taskmanagement.MappingConfig;
 import ru.mikhaildruzhinin.taskmanagement.manager.ManagerMapper;
 import ru.mikhaildruzhinin.taskmanagement.task.TaskMapper;
 
 import java.util.List;
 import java.util.Set;
 
-@Mapper(uses = {ManagerMapper.class, TaskMapper.class} ,componentModel = "cdi")
+@Mapper(uses = {ManagerMapper.class, TaskMapper.class}, config = MappingConfig.class)
 public interface ClientMapper {
 
     @Mapping(target = "id", expression = "java(null)")

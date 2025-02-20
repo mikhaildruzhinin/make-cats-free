@@ -5,9 +5,13 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import ru.mikhaildruzhinin.taskmanagement.client.Client;
+import ru.mikhaildruzhinin.taskmanagement.client.ClientRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Path("/tasks")
 @Tag(name = "Tasks")
@@ -16,56 +20,60 @@ import java.util.List;
 public class TaskResource {
 
   @Inject
-  TaskRepository repository;
+  TaskRepository taskRepository;
+
+  @Inject
+  ClientRepository clientRepository;
 
   @Inject
   TaskMapper mapper;
 
   @GET
-  public TasksResponseDto getTasks() {
-    List<TaskResponseDto> tasks = repository.listAll()
-            .stream()
-            .map(task -> mapper.toDto(task))
-            .toList();
-    return new TasksResponseDto(tasks);
+  public Response getTasks() {
+    List<TaskResponseDto> tasks = mapper.toDtoList(taskRepository.listAll());
+    TasksResponseDto dto = new TasksResponseDto(tasks);
+    return Response.ok(dto).build();
   }
 
   @GET
   @Path("/{id}")
   public Response getTask(@PathParam("id") Long id) {
-    Task task = repository.findByIdOptional(id).orElseThrow(NotFoundException::new);
-    return Response.ok(mapper.toDto(task)).build();
+    Optional<TaskResponseDto> optionalDto = taskRepository.findByIdOptional(id)
+            .map(task -> mapper.toDto(task));
+    ResponseBuilder rb = optionalDto.map(Response::ok)
+            .orElse(Response.status(Response.Status.NOT_FOUND));
+    return rb.build();
   }
 
   @POST
   @Transactional
   public Response addTask(TaskRequestDto dto) {
     Task task = mapper.toEntity(dto);
-    repository.persist(task);
-    return Response.noContent().build();
+    Optional<Client> optionalClient = clientRepository.findByIdOptional(dto.clientId());
+    Optional<Boolean> isSaved = optionalClient.map(client -> {
+      task.setClient(client);
+      taskRepository.persist(task);
+      return true;
+    });
+    ResponseBuilder rb = isSaved.orElse(false) ? Response.ok() : Response.status(Response.Status.NOT_FOUND);
+    return rb.build();
   }
 
   @PUT
   @Path("/{id}")
   public Response updateTask(@PathParam("id") Long id, TaskRequestDto dto) {
     Task task = mapper.toEntity(dto);
-    boolean isUpdated = repository.update(id, task);
-    if (isUpdated) {
-      return Response.ok().build();
-    } else {
-      return Response.status(Response.Status.NOT_FOUND).build();
-    }
+    boolean isUpdated = taskRepository.update(id, task);
+    ResponseBuilder rb = isUpdated ? Response.ok() : Response.status(Response.Status.NOT_FOUND);
+    return rb.build();
   }
 
   @DELETE
   @Path("/{id}")
   @Transactional
   public Response deleteTask(@PathParam("id") Long id) {
-    boolean isDeleted = repository.deleteById(id);
-    if (isDeleted) {
-      return Response.ok().build();
-    } else {
-      return Response.status(Response.Status.NOT_FOUND).build();
-    }
+    boolean isDeleted = taskRepository.deleteById(id);
+    ResponseBuilder rb = isDeleted ? Response.ok() : Response.status(Response.Status.NOT_FOUND);
+    return rb.build();
   }
 }
