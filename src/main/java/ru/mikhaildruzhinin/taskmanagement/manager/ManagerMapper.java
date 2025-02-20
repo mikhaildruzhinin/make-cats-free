@@ -1,9 +1,12 @@
 package ru.mikhaildruzhinin.taskmanagement.manager;
 
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import ru.mikhaildruzhinin.taskmanagement.client.ClientMapper;
+
+import java.util.List;
 
 @Mapper(uses = ClientMapper.class, componentModel = "cdi")
 public interface ManagerMapper {
@@ -16,6 +19,10 @@ public interface ManagerMapper {
     @Mapping(target = "clients", ignore = true)
     ManagerResponseDto toDtoManagerIgnoreClients(Manager manager);
 
+    @IterableMapping(qualifiedByName = "Manager")
+    List<ManagerResponseDto> toDtoList(List<Manager> managers);
+
+    @Named("Manager")
     @Mapping(target = "clients", qualifiedByName = "ClientSetIgnoreManager")
     ManagerResponseDto toDto(Manager manager);
 }

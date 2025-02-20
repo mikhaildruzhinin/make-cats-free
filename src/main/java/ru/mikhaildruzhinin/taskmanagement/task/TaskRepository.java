@@ -10,7 +10,8 @@ import java.util.Optional;
 public class TaskRepository implements PanacheRepository<Task> {
 
     @Transactional
-    public boolean update(Task newTask) {
+    public boolean update(Long id, Task newTask) {
+        newTask.setId(id);
         Optional<Task> optionalTask = findByIdOptional(newTask.getId());
         Optional<Boolean> optionalUpdated = optionalTask.map(task -> {
             task.setTitle(newTask.getTitle());

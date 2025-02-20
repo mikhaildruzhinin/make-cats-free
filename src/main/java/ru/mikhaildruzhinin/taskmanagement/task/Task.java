@@ -3,8 +3,6 @@ package ru.mikhaildruzhinin.taskmanagement.task;
 import jakarta.persistence.*;
 import ru.mikhaildruzhinin.taskmanagement.client.Client;
 
-import java.util.Optional;
-
 @Entity
 public class Task {
     @Id
@@ -19,14 +17,7 @@ public class Task {
     @JoinColumn(name = "client_id", insertable = false, updatable = false)
     private Client client;
 
-    public Task() {
-    }
-
-    public Task(Long id, String title, String description, Client client, Long clientId) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.client = client;
+    protected Task() {
     }
 
     public Long getId() {
@@ -59,15 +50,5 @@ public class Task {
 
     public void setClient(Client client) {
         this.client = client;
-    }
-
-    public TaskDto toDto() {
-        return new TaskDto(
-                this.id,
-                this.title,
-                this.description,
-                Optional.ofNullable(this.client),
-                Optional.ofNullable(this.client).map(Client::getId).orElse(-1L)
-        );
     }
 }
