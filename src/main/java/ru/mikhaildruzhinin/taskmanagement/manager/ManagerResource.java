@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.List;
@@ -25,18 +26,18 @@ public class ManagerResource {
 
     @GET
     public Response getManagers() {
-        List<ManagerResponseDto> managers =  repository.streamAll()
-                .map(manager -> mapper.toDto(manager))
-                .toList();
-        return Response.ok(new ManagersResponseDto(managers)).build();
+        List<ManagerResponseDto> managers = mapper.toDtoList(repository.listAll());
+        ManagersResponseDto dto = new ManagersResponseDto(managers);
+        return Response.ok(dto).build();
     }
 
     @GET
     @Path("/{id}")
     public Response getManager(@PathParam("id") Long id) {
         Optional<ManagerResponseDto> optionalDto = repository.findByIdOptional(id).map(manager -> mapper.toDto(manager));
-        return optionalDto.map(dto -> Response.ok(dto).build())
-                .orElse(Response.status(Response.Status.NOT_FOUND).build());
+        ResponseBuilder rb = optionalDto.map(Response::ok)
+                .orElse(Response.status(Response.Status.NOT_FOUND));
+        return rb.build();
     }
 
     @POST
@@ -51,11 +52,8 @@ public class ManagerResource {
     @Path("/{id}")
     public Response updateManager(@PathParam("id") Long id, @Valid ManagerRequestDto dto) {
         boolean isUpdated = repository.update(id, dto);
-        if (isUpdated) {
-            return Response.ok().build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        ResponseBuilder rb = isUpdated ? Response.ok() : Response.status(Response.Status.NOT_FOUND);
+        return rb.build();
     }
 
     @DELETE
@@ -63,10 +61,7 @@ public class ManagerResource {
     @Transactional
     public Response deleteManager(@PathParam("id") Long id) {
         boolean isDeleted = repository.deleteById(id);
-        if (isDeleted) {
-            return Response.ok().build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        ResponseBuilder rb = isDeleted ? Response.ok() : Response.status(Response.Status.NOT_FOUND);
+        return rb.build();
     }
 }
