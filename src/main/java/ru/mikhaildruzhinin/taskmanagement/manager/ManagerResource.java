@@ -34,7 +34,8 @@ public class ManagerResource {
     @GET
     @Path("/{id}")
     public Response getManager(@PathParam("id") Long id) {
-        Optional<ManagerResponseDto> optionalDto = repository.findByIdOptional(id).map(manager -> mapper.toDto(manager));
+        Optional<ManagerResponseDto> optionalDto = repository.findByIdOptional(id)
+                .map(manager -> mapper.toDto(manager));
         ResponseBuilder rb = optionalDto.map(Response::ok)
                 .orElse(Response.status(Response.Status.NOT_FOUND));
         return rb.build();
@@ -51,8 +52,12 @@ public class ManagerResource {
     @PUT
     @Path("/{id}")
     public Response updateManager(@PathParam("id") Long id, @Valid ManagerRequestDto dto) {
-        boolean isUpdated = repository.update(id, dto);
-        ResponseBuilder rb = isUpdated ? Response.ok() : Response.status(Response.Status.NOT_FOUND);
+        Optional<Manager> optionalManager = repository.findByIdOptional(id);
+        Optional<Boolean> isUpdated = optionalManager.map(manager -> {
+            manager.setName(dto.name());
+            return true;
+        });
+        ResponseBuilder rb = isUpdated.orElse(false) ? Response.ok() : Response.status(Response.Status.NOT_FOUND);
         return rb.build();
     }
 

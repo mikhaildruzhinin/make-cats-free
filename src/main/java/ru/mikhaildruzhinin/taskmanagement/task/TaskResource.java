@@ -62,9 +62,15 @@ public class TaskResource {
   @PUT
   @Path("/{id}")
   public Response updateTask(@PathParam("id") Long id, TaskRequestDto dto) {
-    Task task = mapper.toEntity(dto);
-    boolean isUpdated = taskRepository.update(id, task);
-    ResponseBuilder rb = isUpdated ? Response.ok() : Response.status(Response.Status.NOT_FOUND);
+    Optional<Task> optionalTask = taskRepository.findByIdOptional(id);
+    Optional<Client> optionalClient = clientRepository.findByIdOptional(dto.clientId());
+    Optional<Boolean> isUpdated = optionalTask.flatMap(task -> optionalClient.map(client -> {
+      task.setTitle(dto.title());
+      task.setDescription(dto.description());
+      task.setClient(client);
+      return true;
+    }));
+    ResponseBuilder rb = isUpdated.orElse(false) ? Response.ok() : Response.status(Response.Status.NOT_FOUND);
     return rb.build();
   }
 

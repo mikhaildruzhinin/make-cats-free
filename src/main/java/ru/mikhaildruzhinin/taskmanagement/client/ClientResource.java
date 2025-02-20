@@ -49,7 +49,11 @@ public class ClientResource {
     public Response addClient(ClientRequestDto dto) {
         Client client = mapper.toEntity(dto);
         Optional<Manager> optionalManager = managerRepository.findByIdOptional(dto.managerId());
-        Optional<Boolean> isSaved = optionalManager.map(manager -> clientRepository.save(client, manager));
+        Optional<Boolean> isSaved = optionalManager.map(manager -> {
+            client.setManager(manager);
+            clientRepository.persist(client);
+            return true;
+        });
         ResponseBuilder rb = isSaved.orElse(false) ? Response.noContent() : Response.status(Response.Status.NOT_FOUND);
         return rb.build();
     }
@@ -57,8 +61,14 @@ public class ClientResource {
     @PUT
     @Path("/{id}")
     public Response updateClient(@PathParam("id") Long id, ClientRequestDto dto) {
+        Optional<Client> optionalClient = clientRepository.findByIdOptional(id);
         Optional<Manager> optionalManager = managerRepository.findByIdOptional(dto.managerId());
-        Optional<Boolean> isUpdated = optionalManager.map(manager -> clientRepository.update(id, dto, manager));
+        Optional<Boolean> isUpdated = optionalClient.flatMap(client -> optionalManager.map(manager -> {
+            client.setName(dto.name());
+            client.setManager(manager);
+            // TODO tasks
+            return true;
+        }));
         ResponseBuilder rb = isUpdated.orElse(false) ? Response.ok() : Response.status(Response.Status.NOT_FOUND);
         return rb.build();
     }
