@@ -23,8 +23,9 @@ public class ClientRepository implements PanacheRepository<Client> {
     }
 
     @Transactional
-    public void save(Client client, Manager manager) {
+    public boolean save(Client client, Manager manager) {
         client.setManager(manager);
         persist(client);
+        return true;
     }
 }
