@@ -13,7 +13,7 @@ import ru.mikhaildruzhinin.mcf.taskmanagement.client.ClientRepository;
 import java.util.List;
 import java.util.Optional;
 
-@Path("/tasks")
+@Path("api/tasks")
 @Tag(name = "Tasks")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -50,6 +50,7 @@ public class TaskResource {
   public Response addTask(TaskRequestDto dto) {
     Task task = mapper.toEntity(dto);
     Optional<Client> optionalClient = clientRepository.findByIdOptional(dto.clientId());
+    // TODO add worker
     Optional<Boolean> isSaved = optionalClient.map(client -> {
       task.setClient(client);
       taskRepository.persist(task);
@@ -61,9 +62,11 @@ public class TaskResource {
 
   @PUT
   @Path("/{id}")
+  @Transactional
   public Response updateTask(@PathParam("id") Long id, TaskRequestDto dto) {
     Optional<Task> optionalTask = taskRepository.findByIdOptional(id);
     Optional<Client> optionalClient = clientRepository.findByIdOptional(dto.clientId());
+    // TODO add worker
     Optional<Boolean> isUpdated = optionalTask.flatMap(task -> optionalClient.map(client -> {
       task.setTitle(dto.title());
       task.setDescription(dto.description());

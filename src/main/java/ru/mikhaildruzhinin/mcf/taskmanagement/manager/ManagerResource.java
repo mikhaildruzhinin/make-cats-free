@@ -12,7 +12,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.util.List;
 import java.util.Optional;
 
-@Path("/managers")
+@Path("api/managers")
 @Tag(name = "Managers")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -51,6 +51,7 @@ public class ManagerResource {
 
     @PUT
     @Path("/{id}")
+    @Transactional
     public Response updateManager(@PathParam("id") Long id, @Valid ManagerRequestDto dto) {
         Optional<Manager> optionalManager = repository.findByIdOptional(id);
         Optional<Boolean> isUpdated = optionalManager.map(manager -> {
