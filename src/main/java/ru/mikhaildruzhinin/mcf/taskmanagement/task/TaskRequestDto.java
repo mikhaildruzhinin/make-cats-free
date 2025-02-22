@@ -12,6 +12,9 @@ public record TaskRequestDto(
         String description,
         @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
         @NotBlank()
-        Long clientId
+        Long clientId,
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+        @NotBlank()
+        Long workerId
 ) {
 }

@@ -16,25 +16,20 @@ public interface ClientMapper {
     @Mapping(target = "tasks", expression = "java(Set.of())")
     Client toEntity(ClientRequestDto dto);
 
-    @Named("ClientSetIgnoreManager")
-    @IterableMapping(qualifiedByName = "ClientIgnoreManager")
-    Set<ClientResponseDto> toDtoClientSetIgnoreManager(Set<Client> clients);
+    @Named("ClientSetIgnoreManagerTasks")
+    @IterableMapping(qualifiedByName = "ClientIgnoreManagerTasks")
+    Set<ClientResponseDto> toDtoClientSetIgnoreManagerTasks(Set<Client> clients);
 
-    @Named("ClientIgnoreManager")
+    @Named("ClientIgnoreManagerTasks")
     @Mapping(target = "manager", ignore = true)
-    @Mapping(target = "tasks", qualifiedByName = "TaskSetIgnoreClient")
-    ClientResponseDto toDtoClientIgnoreManager(Client client);
-
-    @Named("ClientIgnoreTasks")
-    @Mapping(target = "manager", qualifiedByName = "ManagerIgnoreClients")
     @Mapping(target = "tasks", ignore = true)
-    ClientResponseDto toDtoClientIgnoreTasks(Client client);
+    ClientResponseDto toDtoClientIgnoreManagerTasks(Client client);
 
     @IterableMapping(qualifiedByName = "Client")
     List<ClientResponseDto> toDtoList(List<Client> client);
 
     @Named("Client")
-    @Mapping(target = "manager", qualifiedByName = "ManagerIgnoreClients")
-    @Mapping(target = "tasks", qualifiedByName = "TaskSetIgnoreClient")
+    @Mapping(target = "manager", qualifiedByName = "ManagerIgnoreWorkersClients")
+    @Mapping(target = "tasks", qualifiedByName = "TaskSetIgnoreWorkerClient")
     ClientResponseDto toDto(Client client);
 }
