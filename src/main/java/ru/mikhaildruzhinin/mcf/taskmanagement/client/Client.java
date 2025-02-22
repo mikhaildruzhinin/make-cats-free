@@ -8,9 +8,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(schema = "mcf", name = "clients")
 public class Client {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;

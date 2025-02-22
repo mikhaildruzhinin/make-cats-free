@@ -5,9 +5,11 @@ import ru.mikhaildruzhinin.mcf.taskmanagement.client.Client;
 import ru.mikhaildruzhinin.mcf.taskmanagement.worker.Worker;
 
 @Entity
+@Table(schema = "mcf", name = "tasks")
 public class Task {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
