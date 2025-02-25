@@ -26,6 +26,10 @@ public class Manager {
     protected Manager() {
     }
 
+    public Manager(String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }

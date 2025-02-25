@@ -1,0 +1,11 @@
+{#include base.html}
+    {#content}
+        <form class="w-75 p-3 mx-auto" action="/admin/manager" method="post" name="manager">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control w-50" id="name" name="name" aria-describedby="emailHelp" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    {/content}
+{/include}

@@ -10,7 +10,9 @@
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse show">
                     <div class="accordion-body">
-                        <button type="button" class="btn btn-outline-primary">New</button>
+                        <form action="/admin/manager" method="get">
+                            <button type="submit" class="btn btn-outline-primary">New</button>
+                        </form>
                         <ul class="list-group mt-2">
                             {#for manager in dto.managers}
                                 <li class="list-group-item">{manager.name}</li>
