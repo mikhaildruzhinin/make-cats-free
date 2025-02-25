@@ -15,7 +15,11 @@
                         </form>
                         <ul class="list-group mt-2">
                             {#for manager in dto.managers}
-                                <li class="list-group-item">{manager.name}</li>
+                                <li class="list-group-item">
+                                    <a href="/admin/manager/{manager.id}" class="stretched-link link-underline-opacity-0 link-body-emphasis">
+                                        {manager.name}
+                                    </a>
+                                </li>
                             {/for}
                         </ul>
                     </div>

@@ -17,10 +17,10 @@ public class Manager {
 
     private String name;
 
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "manager")
     final private Set<Client> clients = new HashSet<>();
 
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "manager")
     final private Set<Worker> workers = new HashSet<>();
 
     protected Manager() {

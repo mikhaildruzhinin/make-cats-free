@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.hibernate.annotations.NotFound;
 import ru.mikhaildruzhinin.mcf.taskmanagement.client.ClientDto;
 import ru.mikhaildruzhinin.mcf.taskmanagement.client.ClientRepository;
 import ru.mikhaildruzhinin.mcf.taskmanagement.manager.Manager;
@@ -20,7 +21,7 @@ import ru.mikhaildruzhinin.mcf.taskmanagement.worker.WorkerRepository;
 import java.net.URI;
 import java.util.List;
 
-@Path("admin")
+@Path("/admin")
 @Produces(MediaType.TEXT_HTML)
 public class AdminResource {
 
@@ -29,6 +30,8 @@ public class AdminResource {
         public static native TemplateInstance admin(AdminResponseDto dto);
 
         public static native TemplateInstance newManager();
+
+        public static native TemplateInstance editManager(ManagerDto manager);
     }
 
     @Inject
@@ -59,20 +62,50 @@ public class AdminResource {
     }
 
     @GET
-    @Path("manager")
+    @Path("/manager")
     @WithSession
     public Uni<TemplateInstance> getNewManager() {
         return Uni.createFrom().item(Templates.newManager());
     }
 
     @POST
-    @Path("manager")
+    @Path("/manager")
     @WithSession
     @WithTransaction
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Response> addManager(@FormParam("name") String name) {
-        System.out.println(name);
-        Manager manager = new Manager(name);
-        return managerRepository.persist(manager).map(x -> Response.seeOther(URI.create("admin")).build());
+        return managerRepository.persist(new Manager(name))
+                .map(x -> Response.seeOther(URI.create("admin")).build());
+    }
+
+    @GET
+    @Path("/manager/{id}")
+    @WithSession
+    @NotFound
+    public Uni<TemplateInstance> getManager(@PathParam("id") Long id) {
+        // FIXME io.quarkus.qute.TemplateException:
+        return managerRepository.get(id).map(Templates::editManager);
+
+    }
+
+    @POST
+    @Path("/manager/{id}")
+    @WithSession
+    @WithTransaction
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Uni<Response> updateManager(@PathParam("id") Long id, @FormParam("name") String name) {
+        return managerRepository.updateName(id, name).map(x -> Response.seeOther(URI.create("admin")).build());
+    }
+
+    @POST
+    @Path("/manager/{id}/delete")
+    @WithSession
+    @WithTransaction
+    public Uni<Response> deleteManager(@PathParam("id") Long id) {
+        // FIXME org.hibernate.exception.ConstraintViolationException
+        return managerRepository.deleteById(id)
+                .map(x -> Response.seeOther(URI.create("admin")).build())
+                .onFailure()
+                .recoverWithItem(Response.seeOther(URI.create("admin")).build());
     }
 }
