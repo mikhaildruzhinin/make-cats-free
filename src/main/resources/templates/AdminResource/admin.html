@@ -10,13 +10,11 @@
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse show">
                     <div class="accordion-body">
-                        <button type="button" class="btn btn-outline-primary">Primary</button>
+                        <button type="button" class="btn btn-outline-primary">New</button>
                         <ul class="list-group mt-2">
-                            <li class="list-group-item">An item</li>
-                            <li class="list-group-item">A second item</li>
-                            <li class="list-group-item">A third item</li>
-                            <li class="list-group-item">A fourth item</li>
-                            <li class="list-group-item">And a fifth one</li>
+                            {#for manager in dto.managers}
+                                <li class="list-group-item">{manager.name}</li>
+                            {/for}
                         </ul>
                     </div>
                 </div>
@@ -29,13 +27,11 @@
                 </h2>
                 <div id="collapseTwo" class="accordion-collapse collapse show">
                     <div class="accordion-body">
-                        <button type="button" class="btn btn-outline-primary">Primary</button>
+                        <button type="button" class="btn btn-outline-primary">New</button>
                         <ul class="list-group mt-2">
-                            <li class="list-group-item">An item</li>
-                            <li class="list-group-item">A second item</li>
-                            <li class="list-group-item">A third item</li>
-                            <li class="list-group-item">A fourth item</li>
-                            <li class="list-group-item">And a fifth one</li>
+                            {#for worker in dto.workers}
+                                <li class="list-group-item">{worker.name}</li>
+                            {/for}
                         </ul>
                     </div>
                 </div>
@@ -48,13 +44,11 @@
                 </h2>
                 <div id="collapseThree" class="accordion-collapse collapse show">
                     <div class="accordion-body">
-                        <button type="button" class="btn btn-outline-primary">Primary</button>
+                        <button type="button" class="btn btn-outline-primary">New</button>
                         <ul class="list-group mt-2">
-                            <li class="list-group-item">An item</li>
-                            <li class="list-group-item">A second item</li>
-                            <li class="list-group-item">A third item</li>
-                            <li class="list-group-item">A fourth item</li>
-                            <li class="list-group-item">And a fifth one</li>
+                            {#for client in dto.clients}
+                                <li class="list-group-item">{client.name}</li>
+                            {/for}
                         </ul>
                     </div>
                 </div>
