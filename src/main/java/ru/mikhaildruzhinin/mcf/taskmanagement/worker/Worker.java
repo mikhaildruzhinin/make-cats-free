@@ -21,10 +21,15 @@ public class Worker {
     @JoinColumn(name = "manager_id")
     private Manager manager;
 
-    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "worker")
     final private Set<Task> tasks = new HashSet<>();
 
     protected Worker() {
+    }
+
+    public Worker(String name, Manager manager) {
+        this.name = name;
+        this.manager = manager;
     }
 
     public Long getId() {

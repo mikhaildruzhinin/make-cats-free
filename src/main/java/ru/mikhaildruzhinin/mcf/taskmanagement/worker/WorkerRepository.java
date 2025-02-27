@@ -10,6 +10,6 @@ import java.util.List;
 public class WorkerRepository implements PanacheRepository<Worker> {
 
     public Uni<List<WorkerDto>> getAll() {
-        return find("select id, name from Worker").project(WorkerDto.class).list();
+        return find("select id, name, manager.id from Worker order by name").project(WorkerDto.class).list();
     }
 }

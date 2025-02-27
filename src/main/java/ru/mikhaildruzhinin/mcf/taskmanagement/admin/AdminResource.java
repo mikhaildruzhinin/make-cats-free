@@ -15,6 +15,7 @@ import ru.mikhaildruzhinin.mcf.taskmanagement.client.ClientRepository;
 import ru.mikhaildruzhinin.mcf.taskmanagement.manager.Manager;
 import ru.mikhaildruzhinin.mcf.taskmanagement.manager.ManagerDto;
 import ru.mikhaildruzhinin.mcf.taskmanagement.manager.ManagerRepository;
+import ru.mikhaildruzhinin.mcf.taskmanagement.worker.Worker;
 import ru.mikhaildruzhinin.mcf.taskmanagement.worker.WorkerDto;
 import ru.mikhaildruzhinin.mcf.taskmanagement.worker.WorkerRepository;
 
@@ -36,6 +37,8 @@ public class AdminResource {
         public static native TemplateInstance newManager();
 
         public static native TemplateInstance editManager(ManagerDto manager);
+
+        public static native TemplateInstance newWorker(List<ManagerDto> managers);
     }
 
     @Inject
@@ -50,7 +53,7 @@ public class AdminResource {
     @GET
     @WithSession
     public Uni<TemplateInstance> get() {
-        Uni<List<ManagerDto>> managers = managerRepository.getAll();
+        Uni<List<ManagerDto>> managers = managerRepository.getAllDtos();
         Uni<List<WorkerDto>> workers = workerRepository.getAll();
         Uni<List<ClientDto>> clients = clientRepository.getAll();
 
@@ -85,7 +88,7 @@ public class AdminResource {
     @NotFound
     public Uni<TemplateInstance> getManager(@PathParam("id") Long id) {
         // FIXME io.quarkus.qute.TemplateException:
-        return managerRepository.get(id).map(Templates::editManager);
+        return managerRepository.getDto(id).map(Templates::editManager);
 
     }
 
@@ -106,5 +109,27 @@ public class AdminResource {
         // FIXME org.hibernate.exception.ConstraintViolationException
         return managerRepository.deleteById(id).map(x -> Response.seeOther(URI.create("admin")).build());
     }
+
+    @GET
+    @Path("/worker")
+    @WithSession
+    public Uni<TemplateInstance> getNewWorker() {
+        return managerRepository.getAllDtos().map(Templates::newWorker);
+    }
+
+    @POST
+    @Path("/worker")
+    @WithSession
+    @WithTransaction
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Uni<Response> addWorker(@FormParam("name") String name, @FormParam("manager_id") Long managerId) {
+        return managerRepository.get(managerId)
+                .chain(manager -> {
+                    Worker newWorker = new Worker(name, manager);
+                    manager.addWorker(newWorker);
+                    return Uni.createFrom().item(newWorker);
+                })
+                .chain(worker -> workerRepository.persist(worker))
+                .map(x -> Response.seeOther(URI.create("admin")).build());
     }
 }
