@@ -14,7 +14,7 @@
                             <button type="submit" class="btn btn-outline-primary">New</button>
                         </form>
                         <ul class="list-group mt-2">
-                            {#for manager in dto.managers}
+                            {#for manager in managers}
                                 <li class="list-group-item">
                                     <a href="/admin/manager/{manager.id}" class="stretched-link link-underline-opacity-0 link-body-emphasis">
                                         {manager.name}
@@ -33,9 +33,11 @@
                 </h2>
                 <div id="collapseTwo" class="accordion-collapse collapse show">
                     <div class="accordion-body">
-                        <button type="button" class="btn btn-outline-primary">New</button>
+                        <form action="/admin/worker" method="get">
+                            <button type="submit" class="btn btn-outline-primary">New</button>
+                        </form>
                         <ul class="list-group mt-2">
-                            {#for worker in dto.workers}
+                            {#for worker in workers}
                                 <li class="list-group-item">{worker.name}</li>
                             {/for}
                         </ul>
@@ -52,7 +54,7 @@
                     <div class="accordion-body">
                         <button type="button" class="btn btn-outline-primary">New</button>
                         <ul class="list-group mt-2">
-                            {#for client in dto.clients}
+                            {#for client in clients}
                                 <li class="list-group-item">{client.name}</li>
                             {/for}
                         </ul>

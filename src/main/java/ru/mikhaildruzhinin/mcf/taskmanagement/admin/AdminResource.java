@@ -27,7 +27,11 @@ public class AdminResource {
 
     @CheckedTemplate
     public static class Templates {
-        public static native TemplateInstance admin(AdminResponseDto dto);
+        public static native TemplateInstance admin(
+                List<ManagerDto> managers,
+                List<WorkerDto> workers,
+                List<ClientDto> clients
+        );
 
         public static native TemplateInstance newManager();
 
@@ -56,9 +60,7 @@ public class AdminResource {
                 .usingConcurrencyOf(1)
                 .asTuple()
                 .onItem()
-                .transform(tuple -> new AdminResponseDto(tuple.getItem1(), tuple.getItem3(), tuple.getItem2()))
-                .onItem()
-                .transform(Templates::admin);
+                .transform(tuple -> Templates.admin(tuple.getItem1(), tuple.getItem2(), tuple.getItem3()));
     }
 
     @GET
@@ -74,8 +76,7 @@ public class AdminResource {
     @WithTransaction
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Response> addManager(@FormParam("name") String name) {
-        return managerRepository.persist(new Manager(name))
-                .map(x -> Response.seeOther(URI.create("admin")).build());
+        return managerRepository.persist(new Manager(name)).map(x -> Response.seeOther(URI.create("admin")).build());
     }
 
     @GET
@@ -103,9 +104,7 @@ public class AdminResource {
     @WithTransaction
     public Uni<Response> deleteManager(@PathParam("id") Long id) {
         // FIXME org.hibernate.exception.ConstraintViolationException
-        return managerRepository.deleteById(id)
-                .map(x -> Response.seeOther(URI.create("admin")).build())
-                .onFailure()
-                .recoverWithItem(Response.seeOther(URI.create("admin")).build());
+        return managerRepository.deleteById(id).map(x -> Response.seeOther(URI.create("admin")).build());
+    }
     }
 }
