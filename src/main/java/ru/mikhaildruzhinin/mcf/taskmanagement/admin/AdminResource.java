@@ -43,6 +43,8 @@ public class AdminResource {
         public static native TemplateInstance editWorker(List<ManagerDto> managers, WorkerDto worker);
 
         public static native TemplateInstance newClient(List<ManagerDto> managers);
+
+        public static native TemplateInstance editClient(List<ManagerDto> managers, ClientDto client);
     }
 
     @Inject
@@ -57,7 +59,7 @@ public class AdminResource {
     @GET
     @WithSession
     public Uni<TemplateInstance> get() {
-        Uni<List<ManagerDto>> managers = managerRepository.getAllDtos();
+        Uni<List<ManagerDto>> managers = managerRepository.getAll();
         Uni<List<WorkerDto>> workers = workerRepository.getAll();
         Uni<List<ClientDto>> clients = clientRepository.getAll();
 
@@ -90,7 +92,7 @@ public class AdminResource {
     @WithSession
     public Uni<TemplateInstance> getManager(@PathParam("id") Long id) {
         // FIXME io.quarkus.qute.TemplateException:
-        return managerRepository.getDto(id).map(Templates::editManager);
+        return managerRepository.get(id).map(Templates::editManager);
 
     }
 
@@ -116,7 +118,7 @@ public class AdminResource {
     @Path("/worker")
     @WithSession
     public Uni<TemplateInstance> getNewWorker() {
-        return managerRepository.getAllDtos().map(Templates::newWorker);
+        return managerRepository.getAll().map(Templates::newWorker);
     }
 
     @POST
@@ -125,7 +127,7 @@ public class AdminResource {
     @WithTransaction
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Response> addWorker(@FormParam("name") String name, @FormParam("manager_id") Long managerId) {
-        return managerRepository.get(managerId)
+        return managerRepository.getEntity(managerId)
                 .chain(manager -> {
                     Worker newWorker = new Worker(name, manager);
                     manager.addWorker(newWorker);
@@ -140,8 +142,8 @@ public class AdminResource {
     @WithSession
     public Uni<TemplateInstance> getWorker(@PathParam("id") Long id) {
         // FIXME io.quarkus.qute.TemplateException
-        Uni<List<ManagerDto>> managers = managerRepository.getAllDtos();
-        Uni<WorkerDto> worker = workerRepository.getDto(id);
+        Uni<List<ManagerDto>> managers = managerRepository.getAll();
+        Uni<WorkerDto> worker = workerRepository.get(id);
 
         return Uni.combine()
                 .all()
@@ -176,7 +178,7 @@ public class AdminResource {
     @Path("/client")
     @WithSession
     public Uni<TemplateInstance> getNewClient() {
-        return managerRepository.getAllDtos().map(Templates::newClient);
+        return managerRepository.getAll().map(Templates::newClient);
     }
 
     @POST
@@ -185,7 +187,7 @@ public class AdminResource {
     @WithTransaction
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Response> addClient(@FormParam("name") String name, @FormParam("manager_id") Long managerId) {
-        return managerRepository.get(managerId)
+        return managerRepository.getEntity(managerId)
                 .chain(manager -> {
                     Client newClient = new Client(name, manager);
                     manager.addClient(newClient);
@@ -193,5 +195,42 @@ public class AdminResource {
                 })
                 .chain(client -> clientRepository.persist(client))
                 .map(x -> Response.seeOther(URI.create("admin")).build());
+    }
+
+    @GET
+    @Path("/client/{id}")
+    @WithSession
+    public Uni<TemplateInstance> getClient(@PathParam("id") Long id) {
+        // FIXME io.quarkus.qute.TemplateException
+        Uni<List<ManagerDto>> managers = managerRepository.getAll();
+        Uni<ClientDto> client = clientRepository.get(id);
+
+        return Uni.combine()
+                .all()
+                .unis(managers, client)
+                .usingConcurrencyOf(1)
+                .asTuple()
+                .map(tuple -> Templates.editClient(tuple.getItem1(), tuple.getItem2()));
+    }
+
+    @POST
+    @Path("/client/{id}")
+    @WithSession
+    @WithTransaction
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Uni<Response> updateClient(
+            @PathParam("id") Long id,
+            @FormParam("name") String name,
+            @FormParam("manager_id") Long managerId) {
+        return clientRepository.update(id, name, managerId).map(x -> Response.seeOther(URI.create("admin")).build());
+    }
+
+    @POST
+    @Path("/client/{id}/delete")
+    @WithSession
+    @WithTransaction
+    public Uni<Response> deleteClient(@PathParam("id") Long id) {
+        // FIXME org.hibernate.exception.ConstraintViolationException
+        return clientRepository.deleteById(id).map(x -> Response.seeOther(URI.create("admin")).build());
     }
 }

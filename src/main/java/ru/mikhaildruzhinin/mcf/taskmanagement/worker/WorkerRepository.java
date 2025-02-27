@@ -13,7 +13,7 @@ public class WorkerRepository implements PanacheRepository<Worker> {
         return find("select id, name, manager.id from Worker order by name").project(WorkerDto.class).list();
     }
 
-    public Uni<WorkerDto> getDto(Long id) {
+    public Uni<WorkerDto> get(Long id) {
         return find("select id, name, manager.id from Worker where id = ?1", id)
                 .project(WorkerDto.class)
                 .firstResult();
