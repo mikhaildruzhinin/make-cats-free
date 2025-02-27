@@ -1,0 +1,22 @@
+{#include base.html}
+    {#content}
+        <ul class="list-group w-75 p-3 mx-auto">
+            <li class="list-group-item">
+                <form action="/admin/client" method="post" name="client">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control w-50" id="name" name="name" aria-describedby="managerName" required>
+                        <label for="manager_id" class="form-label">Manager Id</label>
+                        <select class="form-select w-50" id="manager_id" name="manager_id" aria-label="Manager" required>
+                            <option selected disabled value="">Select manager...</option>
+                            {#for manager in managers}
+                                <option value="{manager.id}">{manager.name}</option>
+                            {/for}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </li>
+        </ul>
+    {/content}
+{/include}

@@ -56,10 +56,16 @@
                 </h2>
                 <div id="collapseThree" class="accordion-collapse collapse show">
                     <div class="accordion-body">
-                        <button type="button" class="btn btn-outline-primary">New</button>
+                        <form action="/admin/client" method="get">
+                            <button type="submit" class="btn btn-outline-primary">New</button>
+                        </form>
                         <ul class="list-group mt-2">
                             {#for client in clients}
-                                <li class="list-group-item">{client.name}</li>
+                                <li class="list-group-item">
+                                    <a href="/admin/client/{client.id}" class="stretched-link link-underline-opacity-0 link-body-emphasis">
+                                        {client.name}
+                                    </a>
+                                </li>
                             {/for}
                         </ul>
                     </div>

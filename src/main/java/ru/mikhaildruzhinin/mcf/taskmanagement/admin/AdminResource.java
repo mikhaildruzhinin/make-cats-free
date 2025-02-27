@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import ru.mikhaildruzhinin.mcf.taskmanagement.client.Client;
 import ru.mikhaildruzhinin.mcf.taskmanagement.client.ClientDto;
 import ru.mikhaildruzhinin.mcf.taskmanagement.client.ClientRepository;
 import ru.mikhaildruzhinin.mcf.taskmanagement.manager.Manager;
@@ -40,6 +41,8 @@ public class AdminResource {
         public static native TemplateInstance newWorker(List<ManagerDto> managers);
 
         public static native TemplateInstance editWorker(List<ManagerDto> managers, WorkerDto worker);
+
+        public static native TemplateInstance newClient(List<ManagerDto> managers);
     }
 
     @Inject
@@ -167,5 +170,28 @@ public class AdminResource {
     public Uni<Response> deleteWorker(@PathParam("id") Long id) {
         // FIXME org.hibernate.exception.ConstraintViolationException
         return workerRepository.deleteById(id).map(x -> Response.seeOther(URI.create("admin")).build());
+    }
+
+    @GET
+    @Path("/client")
+    @WithSession
+    public Uni<TemplateInstance> getNewClient() {
+        return managerRepository.getAllDtos().map(Templates::newClient);
+    }
+
+    @POST
+    @Path("/client")
+    @WithSession
+    @WithTransaction
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Uni<Response> addClient(@FormParam("name") String name, @FormParam("manager_id") Long managerId) {
+        return managerRepository.get(managerId)
+                .chain(manager -> {
+                    Client newClient = new Client(name, manager);
+                    manager.addClient(newClient);
+                    return Uni.createFrom().item(newClient);
+                })
+                .chain(client -> clientRepository.persist(client))
+                .map(x -> Response.seeOther(URI.create("admin")).build());
     }
 }

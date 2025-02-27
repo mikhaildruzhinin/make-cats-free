@@ -27,6 +27,11 @@ public class Client {
     protected Client() {
     }
 
+    public Client(String name, Manager manager) {
+        this.name = name;
+        this.manager = manager;
+    }
+
     public Long getId() {
         return id;
     }
