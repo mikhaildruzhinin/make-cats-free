@@ -9,7 +9,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.hibernate.annotations.NotFound;
 import ru.mikhaildruzhinin.mcf.taskmanagement.client.ClientDto;
 import ru.mikhaildruzhinin.mcf.taskmanagement.client.ClientRepository;
 import ru.mikhaildruzhinin.mcf.taskmanagement.manager.Manager;
@@ -39,6 +38,8 @@ public class AdminResource {
         public static native TemplateInstance editManager(ManagerDto manager);
 
         public static native TemplateInstance newWorker(List<ManagerDto> managers);
+
+        public static native TemplateInstance editWorker(List<ManagerDto> managers, WorkerDto worker);
     }
 
     @Inject
@@ -62,8 +63,7 @@ public class AdminResource {
                 .unis(managers, workers, clients)
                 .usingConcurrencyOf(1)
                 .asTuple()
-                .onItem()
-                .transform(tuple -> Templates.admin(tuple.getItem1(), tuple.getItem2(), tuple.getItem3()));
+                .map(tuple -> Templates.admin(tuple.getItem1(), tuple.getItem2(), tuple.getItem3()));
     }
 
     @GET
@@ -85,7 +85,6 @@ public class AdminResource {
     @GET
     @Path("/manager/{id}")
     @WithSession
-    @NotFound
     public Uni<TemplateInstance> getManager(@PathParam("id") Long id) {
         // FIXME io.quarkus.qute.TemplateException:
         return managerRepository.getDto(id).map(Templates::editManager);
@@ -98,7 +97,7 @@ public class AdminResource {
     @WithTransaction
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Response> updateManager(@PathParam("id") Long id, @FormParam("name") String name) {
-        return managerRepository.updateName(id, name).map(x -> Response.seeOther(URI.create("admin")).build());
+        return managerRepository.update(id, name).map(x -> Response.seeOther(URI.create("admin")).build());
     }
 
     @POST
@@ -131,5 +130,42 @@ public class AdminResource {
                 })
                 .chain(worker -> workerRepository.persist(worker))
                 .map(x -> Response.seeOther(URI.create("admin")).build());
+    }
+
+    @GET
+    @Path("/worker/{id}")
+    @WithSession
+    public Uni<TemplateInstance> getWorker(@PathParam("id") Long id) {
+        // FIXME io.quarkus.qute.TemplateException
+        Uni<List<ManagerDto>> managers = managerRepository.getAllDtos();
+        Uni<WorkerDto> worker = workerRepository.getDto(id);
+
+        return Uni.combine()
+                .all()
+                .unis(managers, worker)
+                .usingConcurrencyOf(1)
+                .asTuple()
+                .map(tuple -> Templates.editWorker(tuple.getItem1(), tuple.getItem2()));
+    }
+
+    @POST
+    @Path("/worker/{id}")
+    @WithSession
+    @WithTransaction
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Uni<Response> updateWorker(
+            @PathParam("id") Long id,
+            @FormParam("name") String name,
+            @FormParam("manager_id") Long managerId) {
+        return workerRepository.update(id, name, managerId).map(x -> Response.seeOther(URI.create("admin")).build());
+    }
+
+    @POST
+    @Path("/worker/{id}/delete")
+    @WithSession
+    @WithTransaction
+    public Uni<Response> deleteWorker(@PathParam("id") Long id) {
+        // FIXME org.hibernate.exception.ConstraintViolationException
+        return workerRepository.deleteById(id).map(x -> Response.seeOther(URI.create("admin")).build());
     }
 }

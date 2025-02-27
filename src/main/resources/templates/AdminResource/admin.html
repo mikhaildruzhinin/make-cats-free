@@ -38,7 +38,11 @@
                         </form>
                         <ul class="list-group mt-2">
                             {#for worker in workers}
-                                <li class="list-group-item">{worker.name}</li>
+                                <li class="list-group-item">
+                                    <a href="/admin/worker/{worker.id}" class="stretched-link link-underline-opacity-0 link-body-emphasis">
+                                        {worker.name}
+                                    </a>
+                                </li>
                             {/for}
                         </ul>
                     </div>

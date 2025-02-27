@@ -1,0 +1,27 @@
+{#include base.html}
+    {#content}
+        <ul class="list-group w-75 p-3 mx-auto">
+            <li class="list-group-item">
+                <form name="worker">
+                    <div class="mb-3">
+                        <fieldset disabled>
+                            <label for="disabledTextInput" class="form-label">Id</label>
+                            <input type="text" id="disabledTextInput" class="form-control w-50" value="{worker.id}">
+                        </fieldset>
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control w-50" id="name" name="name" aria-describedby="workerName" value="{worker.name}" required>
+                        <label for="manager_id" class="form-label">Manager Id</label>
+                        <select class="form-select w-50" id="manager_id" name="manager_id" aria-label="Manager" required>
+                            <option disabled value="">Select manager...</option>
+                            {#for manager in managers}
+                                <option value="{manager.id}" {#if manager.id == worker.managerId}selected{/if}>{manager.name}</option>
+                            {/for}
+                        </select>
+                    </div>
+                    <button type="submit" formaction="/admin/worker/{worker.id}" formmethod="post" class="btn btn-primary">Update</button>
+                    <button type="submit" formaction="/admin/worker/{worker.id}/delete" formmethod="post" class="btn btn-primary">Delete</button>
+                </form>
+            </li>
+        </ul>
+    {/content}
+{/include}

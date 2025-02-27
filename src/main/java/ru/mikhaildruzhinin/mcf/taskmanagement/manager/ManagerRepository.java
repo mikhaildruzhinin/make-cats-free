@@ -23,7 +23,7 @@ public class ManagerRepository implements PanacheRepository<Manager> {
         return find("select m from Manager m left join fetch m.workers w where m.id = ?1", id).firstResult();
     }
 
-    public Uni<Integer> updateName(Long id, String name) {
+    public Uni<Integer> update(Long id, String name) {
         return update("name = '%s' where id = ?1".formatted(name), id);
     }
 }
