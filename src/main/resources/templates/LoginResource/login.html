@@ -1,0 +1,19 @@
+{#include base.html}
+    {#content}
+        <ul class="list-group w-75 p-3 mx-auto">
+            <li class="list-group-item">
+                <form action="/j_security_check" method="post">
+                    <div class="mb-3">
+                        <label for="inputUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="inputUsername" aria-describedby="login" placeholder="Username" name="j_username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="inputPassword" placeholder="Password" name="j_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </li>
+        </ul>
+    {/content}
+{/include}

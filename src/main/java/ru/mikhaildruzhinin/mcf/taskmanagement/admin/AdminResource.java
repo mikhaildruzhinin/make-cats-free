@@ -5,6 +5,7 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.mutiny.Uni;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -23,6 +24,7 @@ import java.net.URI;
 import java.util.List;
 
 @Path("/admin")
+@RolesAllowed("admin")
 @Produces(MediaType.TEXT_HTML)
 public class AdminResource {
 
@@ -55,6 +57,8 @@ public class AdminResource {
 
     @Inject
     ClientRepository clientRepository;
+
+    // TODO add exception mapper
 
     @GET
     @WithSession
