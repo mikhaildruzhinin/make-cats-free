@@ -188,11 +188,7 @@ public class AdminResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Response> addClient(@FormParam("name") String name, @FormParam("manager_id") Long managerId) {
         return managerRepository.getEntity(managerId)
-                .chain(manager -> {
-                    Client newClient = new Client(name, manager);
-                    manager.addClient(newClient);
-                    return Uni.createFrom().item(newClient);
-                })
+                .map(manager -> new Client(name, manager))
                 .chain(client -> clientRepository.persist(client))
                 .map(x -> Response.seeOther(URI.create("admin")).build());
     }
