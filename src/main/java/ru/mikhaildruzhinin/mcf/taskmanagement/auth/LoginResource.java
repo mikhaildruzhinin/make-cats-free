@@ -1,4 +1,4 @@
-package ru.mikhaildruzhinin.mcf.taskmanagement;
+package ru.mikhaildruzhinin.mcf.taskmanagement.auth;
 
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.qute.CheckedTemplate;
@@ -34,6 +34,4 @@ public class LoginResource {
     public Uni<TemplateInstance> error() {
         return Uni.createFrom().item(Templates.error());
     }
-
-
 }

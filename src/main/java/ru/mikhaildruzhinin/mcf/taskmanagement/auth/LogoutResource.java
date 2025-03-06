@@ -1,4 +1,4 @@
-package ru.mikhaildruzhinin.mcf.taskmanagement;
+package ru.mikhaildruzhinin.mcf.taskmanagement.auth;
 
 import io.smallrye.mutiny.Uni;
 import jakarta.annotation.security.PermitAll;
@@ -14,6 +14,7 @@ public class LogoutResource {
 
     @POST
     public Uni<Response> logout() {
+        // TODO remove logout button from login page
         return Uni.createFrom().item(Response.seeOther(URI.create("/login")).build());
     }
 }
