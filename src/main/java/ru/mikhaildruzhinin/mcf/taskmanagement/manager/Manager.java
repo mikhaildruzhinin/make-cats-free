@@ -2,6 +2,7 @@ package ru.mikhaildruzhinin.mcf.taskmanagement.manager;
 
 import jakarta.persistence.*;
 import ru.mikhaildruzhinin.mcf.taskmanagement.client.Client;
+import ru.mikhaildruzhinin.mcf.taskmanagement.user.User;
 import ru.mikhaildruzhinin.mcf.taskmanagement.worker.Worker;
 
 import java.util.HashSet;
@@ -12,7 +13,6 @@ import java.util.Set;
 public class Manager {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -23,11 +23,17 @@ public class Manager {
     @OneToMany(mappedBy = "manager")
     final private Set<Worker> workers = new HashSet<>();
 
+    @PrimaryKeyJoinColumn
+    @OneToOne(cascade = CascadeType.REMOVE)
+    private User user;
+
     protected Manager() {
     }
 
-    public Manager(String name) {
+    public Manager(Long id, String name, User user) {
+        this.id = id;
         this.name = name;
+        this.user = user;
     }
 
     public Long getId() {
@@ -84,5 +90,13 @@ public class Manager {
 
     public void removeWorkers(Set<Worker> workers) {
         this.workers.removeAll(workers);
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

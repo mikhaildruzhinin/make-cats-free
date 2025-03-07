@@ -16,6 +16,8 @@ import ru.mikhaildruzhinin.mcf.taskmanagement.client.ClientRepository;
 import ru.mikhaildruzhinin.mcf.taskmanagement.manager.Manager;
 import ru.mikhaildruzhinin.mcf.taskmanagement.manager.ManagerDto;
 import ru.mikhaildruzhinin.mcf.taskmanagement.manager.ManagerRepository;
+import ru.mikhaildruzhinin.mcf.taskmanagement.user.User;
+import ru.mikhaildruzhinin.mcf.taskmanagement.user.UserRepository;
 import ru.mikhaildruzhinin.mcf.taskmanagement.worker.Worker;
 import ru.mikhaildruzhinin.mcf.taskmanagement.worker.WorkerDto;
 import ru.mikhaildruzhinin.mcf.taskmanagement.worker.WorkerRepository;
@@ -50,6 +52,9 @@ public class AdminResource {
     }
 
     @Inject
+    UserRepository userRepository;
+
+    @Inject
     ManagerRepository managerRepository;
 
     @Inject
@@ -58,11 +63,11 @@ public class AdminResource {
     @Inject
     ClientRepository clientRepository;
 
-    // TODO add exception mapper
+    // TODO addReturningId exception mapper
 
     @GET
     @WithSession
-    public Uni<TemplateInstance> get() {
+    public Uni<TemplateInstance> admin() {
         Uni<List<ManagerDto>> managers = managerRepository.getAll();
         Uni<List<WorkerDto>> workers = workerRepository.getAll();
         Uni<List<ClientDto>> clients = clientRepository.getAll();
@@ -82,13 +87,18 @@ public class AdminResource {
         return Uni.createFrom().item(Templates.newManager());
     }
 
+    @SuppressWarnings("ReactiveStreamsTooLongSameOperatorsChain")
     @POST
     @Path("/manager")
     @WithSession
     @WithTransaction
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Response> addManager(@FormParam("name") String name) {
-        return managerRepository.persist(new Manager(name)).map(x -> Response.seeOther(URI.create("admin")).build());
+        User user = new User(name, "manager");
+        return userRepository.persist(user)
+                .map(u -> new Manager(u.getId(), name, u))
+                .flatMap(manager -> managerRepository.persist(manager))
+                .map(x -> Response.seeOther(URI.create("admin")).build());
     }
 
     @GET
@@ -97,7 +107,6 @@ public class AdminResource {
     public Uni<TemplateInstance> getManager(@PathParam("id") Long id) {
         // FIXME io.quarkus.qute.TemplateException:
         return managerRepository.get(id).map(Templates::editManager);
-
     }
 
     @POST
@@ -125,20 +134,21 @@ public class AdminResource {
         return managerRepository.getAll().map(Templates::newWorker);
     }
 
+    @SuppressWarnings("ReactiveStreamsTooLongSameOperatorsChain")
     @POST
     @Path("/worker")
     @WithSession
     @WithTransaction
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Response> addWorker(@FormParam("name") String name, @FormParam("manager_id") Long managerId) {
-        return managerRepository.getEntity(managerId)
-                .chain(manager -> {
-                    Worker newWorker = new Worker(name, manager);
-                    manager.addWorker(newWorker);
-                    return Uni.createFrom().item(newWorker);
-                })
+
+        Uni<User> user = userRepository.persist(new User(name, "worker"));
+        Uni<Manager> manager = managerRepository.getEntity(managerId);
+
+        return user.flatMap(u -> manager.map(m -> new Worker(u.getId(), name, m, u))
                 .chain(worker -> workerRepository.persist(worker))
-                .map(x -> Response.seeOther(URI.create("admin")).build());
+                .map(x -> Response.seeOther(URI.create("admin")).build()));
+
     }
 
     @GET
@@ -191,10 +201,13 @@ public class AdminResource {
     @WithTransaction
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Response> addClient(@FormParam("name") String name, @FormParam("manager_id") Long managerId) {
-        return managerRepository.getEntity(managerId)
-                .map(manager -> new Client(name, manager))
+
+        Uni<User> user = userRepository.persist(new User(name, "client"));
+        Uni<Manager> manager = managerRepository.getEntity(managerId);
+
+        return user.flatMap(u -> manager.map(m -> new Client(u.getId(), name, m, u))
                 .chain(client -> clientRepository.persist(client))
-                .map(x -> Response.seeOther(URI.create("admin")).build());
+                .map(x -> Response.seeOther(URI.create("admin")).build()));
     }
 
     @GET

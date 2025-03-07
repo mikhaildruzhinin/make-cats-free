@@ -26,9 +26,16 @@ public class User {
     @Roles
     private String role;
 
+    @Column(insertable = false)
     private Instant createdAt;
 
-    public User() {
+    protected User() {
+    }
+
+    public User(String username, String role) {
+        this.username = username;
+        this.password = UserUtils.createPassword();
+        this.role = role;
     }
 
     public Long getId() {

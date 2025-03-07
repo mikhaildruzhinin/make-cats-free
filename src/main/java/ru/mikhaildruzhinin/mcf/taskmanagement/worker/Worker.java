@@ -3,6 +3,7 @@ package ru.mikhaildruzhinin.mcf.taskmanagement.worker;
 import jakarta.persistence.*;
 import ru.mikhaildruzhinin.mcf.taskmanagement.manager.Manager;
 import ru.mikhaildruzhinin.mcf.taskmanagement.task.Task;
+import ru.mikhaildruzhinin.mcf.taskmanagement.user.User;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +13,6 @@ import java.util.Set;
 public class Worker {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -24,12 +24,18 @@ public class Worker {
     @OneToMany(mappedBy = "worker")
     final private Set<Task> tasks = new HashSet<>();
 
+    @PrimaryKeyJoinColumn
+    @OneToOne(cascade = CascadeType.REMOVE)
+    private User user;
+
     protected Worker() {
     }
 
-    public Worker(String name, Manager manager) {
+    public Worker(Long id, String name, Manager manager, User user) {
+        this.id = id;
         this.name = name;
         this.manager = manager;
+        this.user = user;
     }
 
     public Long getId() {
@@ -74,5 +80,13 @@ public class Worker {
 
     public void removeTasks(Set<Task> tasks) {
         this.tasks.removeAll(tasks);
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
