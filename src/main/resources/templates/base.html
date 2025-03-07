@@ -31,9 +31,11 @@
                     </ul>
                 </li>
             </ul>
-            <form action="/logout" method="post">
-                <button class="btn btn-outline-secondary" type="submit">Logout</button>
-            </form>
+            {#insert disableLogout}
+                <form action="/logout" method="post">
+                    <button class="btn btn-outline-secondary" type="submit">Logout</button>
+                </form>
+            {/insert}
         </div>
     </div>
 </nav>
