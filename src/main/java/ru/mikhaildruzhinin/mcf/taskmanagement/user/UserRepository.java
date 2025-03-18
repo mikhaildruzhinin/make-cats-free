@@ -8,6 +8,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class UserRepository implements PanacheRepository<User> {
 
     public Uni<User> findByRole(String role) {
-        return find("select 1 from User where role = ?1", role).firstResult();
+        return find("select u from User u where role = ?1", role).firstResult();
     }
 }
