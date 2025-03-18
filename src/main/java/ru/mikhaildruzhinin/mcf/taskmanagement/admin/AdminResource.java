@@ -65,6 +65,8 @@ public class AdminResource {
 
     // TODO addReturningId exception mapper
 
+    private final Response adminResponse = Response.seeOther(URI.create("/admin")).build();
+
     @GET
     @WithSession
     public Uni<TemplateInstance> admin() {
@@ -98,7 +100,7 @@ public class AdminResource {
         return userRepository.persist(user)
                 .map(u -> new Manager(u.getId(), name, u))
                 .flatMap(manager -> managerRepository.persist(manager))
-                .map(x -> Response.seeOther(URI.create("admin")).build());
+                .map(x -> adminResponse);
     }
 
     @GET
@@ -115,7 +117,7 @@ public class AdminResource {
     @WithTransaction
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Response> updateManager(@PathParam("id") Long id, @FormParam("name") String name) {
-        return managerRepository.update(id, name).map(x -> Response.seeOther(URI.create("admin")).build());
+        return managerRepository.update(id, name).map(x -> adminResponse);
     }
 
     @POST
@@ -124,7 +126,7 @@ public class AdminResource {
     @WithTransaction
     public Uni<Response> deleteManager(@PathParam("id") Long id) {
         // FIXME org.hibernate.exception.ConstraintViolationException
-        return managerRepository.deleteById(id).map(x -> Response.seeOther(URI.create("admin")).build());
+        return managerRepository.deleteById(id).map(x -> adminResponse);
     }
 
     @GET
@@ -147,7 +149,7 @@ public class AdminResource {
 
         return user.flatMap(u -> manager.map(m -> new Worker(u.getId(), name, m, u))
                 .chain(worker -> workerRepository.persist(worker))
-                .map(x -> Response.seeOther(URI.create("admin")).build()));
+                .map(x -> adminResponse));
 
     }
 
@@ -176,7 +178,7 @@ public class AdminResource {
             @PathParam("id") Long id,
             @FormParam("name") String name,
             @FormParam("manager_id") Long managerId) {
-        return workerRepository.update(id, name, managerId).map(x -> Response.seeOther(URI.create("admin")).build());
+        return workerRepository.update(id, name, managerId).map(x -> adminResponse);
     }
 
     @POST
@@ -185,7 +187,7 @@ public class AdminResource {
     @WithTransaction
     public Uni<Response> deleteWorker(@PathParam("id") Long id) {
         // FIXME org.hibernate.exception.ConstraintViolationException
-        return workerRepository.deleteById(id).map(x -> Response.seeOther(URI.create("admin")).build());
+        return workerRepository.deleteById(id).map(x -> adminResponse);
     }
 
     @GET
@@ -207,7 +209,7 @@ public class AdminResource {
 
         return user.flatMap(u -> manager.map(m -> new Client(u.getId(), name, m, u))
                 .chain(client -> clientRepository.persist(client))
-                .map(x -> Response.seeOther(URI.create("admin")).build()));
+                .map(x -> adminResponse));
     }
 
     @GET
@@ -235,7 +237,7 @@ public class AdminResource {
             @PathParam("id") Long id,
             @FormParam("name") String name,
             @FormParam("manager_id") Long managerId) {
-        return clientRepository.update(id, name, managerId).map(x -> Response.seeOther(URI.create("admin")).build());
+        return clientRepository.update(id, name, managerId).map(x -> adminResponse);
     }
 
     @POST
@@ -244,6 +246,6 @@ public class AdminResource {
     @WithTransaction
     public Uni<Response> deleteClient(@PathParam("id") Long id) {
         // FIXME org.hibernate.exception.ConstraintViolationException
-        return clientRepository.deleteById(id).map(x -> Response.seeOther(URI.create("admin")).build());
+        return clientRepository.deleteById(id).map(x -> adminResponse);
     }
 }
