@@ -12,10 +12,11 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
-import ru.mikhaildruzhinin.mcf.taskmanagement.task.Task;
-import ru.mikhaildruzhinin.mcf.taskmanagement.task.TaskRepository;
+import ru.mikhaildruzhinin.mcf.taskmanagement.task.*;
+import ru.mikhaildruzhinin.mcf.taskmanagement.worker.*;
 
 import java.net.URI;
+import java.util.List;
 
 @SuppressWarnings("ReactiveStreamsTooLongSameOperatorsChain")
 @Path("/client")
@@ -25,7 +26,7 @@ public class ClientResource {
 
     @CheckedTemplate
     public static class Templates {
-        public static native TemplateInstance client(String name);
+        public static native TemplateInstance client(String name, List<TaskDto> tasks);
 
         public static native TemplateInstance newTask();
     }
@@ -34,11 +35,17 @@ public class ClientResource {
     ClientRepository clientRepository;
 
     @Inject
+    WorkerRepository workerRepository;
+
+    @Inject
     TaskRepository taskRepository;
 
     @GET
     public Uni<TemplateInstance> client(@Context SecurityContext context) {
-        return Uni.createFrom().item(Templates.client(context.getUserPrincipal().getName()));
+        String username = context.getUserPrincipal().getName();
+        return clientRepository.findByName(username)
+                .flatMap(c -> taskRepository.filterByClientId(c.getId()))
+                .map(tasks -> Templates.client(username, tasks));
     }
 
     @GET
@@ -58,8 +65,15 @@ public class ClientResource {
                                  @Context SecurityContext context) {
 
         String username = context.getUserPrincipal().getName();
-        return clientRepository.findByName(username)
-                .map(client -> new Task(title, description, client))
+        int price = 100;
+        Uni<Client> client = clientRepository.findByName(username);
+        Uni<Worker> worker = workerRepository.findRandom();
+        return Uni.combine()
+                .all()
+                .unis(client, worker)
+                .usingConcurrencyOf(1)
+                .asTuple()
+                .map(t -> new Task(title, description, price, t.getItem1(), t.getItem2()))
                 .flatMap(task -> taskRepository.persist(task))
                 .map(x -> Response.seeOther(URI.create("/client")).build());
     }

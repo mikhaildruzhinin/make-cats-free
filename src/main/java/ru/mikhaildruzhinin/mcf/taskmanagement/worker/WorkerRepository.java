@@ -22,4 +22,8 @@ public class WorkerRepository implements PanacheRepository<Worker> {
     public Uni<Integer> update(Long id, String name, Long managerId) {
         return update("name = '%s', manager.id = %d where id = ?1".formatted(name, managerId), id);
     }
+
+    public Uni<Worker> findRandom() {
+        return find("select w from Worker w order by random()").firstResult();
+    }
 }

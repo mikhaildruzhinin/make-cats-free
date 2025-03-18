@@ -16,6 +16,8 @@ public class Task {
 
     private String description;
 
+    private int price;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")
     private Client client;
@@ -27,10 +29,12 @@ public class Task {
     protected Task() {
     }
 
-    public Task(String title, String description, Client client) {
+    public Task(String title, String description, int price, Client client, Worker worker) {
         this.title = title;
         this.description = description;
+        this.price = price;
         this.client = client;
+        this.worker = worker;
     }
 
     public Long getId() {
@@ -71,5 +75,13 @@ public class Task {
 
     public void setWorker(Worker worker) {
         this.worker = worker;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
     }
 }

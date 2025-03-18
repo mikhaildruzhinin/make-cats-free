@@ -7,7 +7,14 @@
                         <label for="title" class="form-label">Title</label>
                         <input type="text" class="form-control w-50" id="title" name="title" aria-describedby="taskTitle" required>
                         <label for="desc" class="form-label">Description</label>
-                        <textarea class="form-control w-50" id="desc" name="desc" aria-describedby="taskDesc" rows="3"></textarea>
+                        <textarea class="form-control w-50" id="desc" name="desc" aria-describedby="taskDesc" rows="3" required></textarea>
+                        <label for="meeting-time" class="form-label">Choose date and time:</label>
+                        <input type="datetime-local"
+                               class="form-control w-50"
+                               id="meeting-time"
+                               name="meeting-time"
+                               required
+                        />
                     </div>
                     <button type="submit" class="btn btn-primary">Add</button>
                 </form>
