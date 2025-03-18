@@ -16,6 +16,10 @@ import ru.mikhaildruzhinin.mcf.taskmanagement.task.*;
 import ru.mikhaildruzhinin.mcf.taskmanagement.worker.*;
 
 import java.net.URI;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @SuppressWarnings("ReactiveStreamsTooLongSameOperatorsChain")
@@ -62,10 +66,12 @@ public class ClientResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Response> addTask(@FormParam("title") String title,
                                  @FormParam("desc") String description,
+                                 @FormParam("task-execution-datetime") String executionTime,
                                  @Context SecurityContext context) {
 
         String username = context.getUserPrincipal().getName();
         int price = 100;
+        Instant executedAt = LocalDateTime.parse(executionTime, DateTimeFormatter.ISO_DATE_TIME).toInstant(ZoneOffset.UTC);
         Uni<Client> client = clientRepository.findByName(username);
         Uni<Worker> worker = workerRepository.findRandom();
         return Uni.combine()
@@ -73,7 +79,7 @@ public class ClientResource {
                 .unis(client, worker)
                 .usingConcurrencyOf(1)
                 .asTuple()
-                .map(t -> new Task(title, description, price, t.getItem1(), t.getItem2()))
+                .map(t -> new Task(title, description, price, t.getItem1(), t.getItem2(), executedAt))
                 .flatMap(task -> taskRepository.persist(task))
                 .map(x -> Response.seeOther(URI.create("/client")).build());
     }

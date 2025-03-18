@@ -5,14 +5,14 @@
                 <form action="/client/task" method="post" name="task">
                     <div class="mb-3">
                         <label for="title" class="form-label">Title</label>
-                        <input type="text" class="form-control w-50" id="title" name="title" aria-describedby="taskTitle" required>
+                        <input type="text" class="form-control w-50" id="title" name="title" aria-describedby="task-title" required>
                         <label for="desc" class="form-label">Description</label>
-                        <textarea class="form-control w-50" id="desc" name="desc" aria-describedby="taskDesc" rows="3" required></textarea>
-                        <label for="meeting-time" class="form-label">Choose date and time:</label>
+                        <textarea class="form-control w-50" id="desc" name="desc" aria-describedby="task-desc" rows="3" required></textarea>
+                        <label for="task-execution-datetime" class="form-label">Choose date and time:</label>
                         <input type="datetime-local"
                                class="form-control w-50"
-                               id="meeting-time"
-                               name="meeting-time"
+                               id="task-execution-datetime"
+                               name="task-execution-datetime"
                                required
                         />
                     </div>

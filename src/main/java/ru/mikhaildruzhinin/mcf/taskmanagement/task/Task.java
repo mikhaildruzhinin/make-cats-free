@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import ru.mikhaildruzhinin.mcf.taskmanagement.client.Client;
 import ru.mikhaildruzhinin.mcf.taskmanagement.worker.Worker;
 
+import java.time.Instant;
+
 @Entity
 @Table(schema = "mcf", name = "tasks")
 public class Task {
@@ -26,15 +28,21 @@ public class Task {
     @JoinColumn(name = "worker_id")
     private Worker worker;
 
+    private Instant executedAt;
+
+    @Column(insertable = false)
+    private Instant createdAt;
+
     protected Task() {
     }
 
-    public Task(String title, String description, int price, Client client, Worker worker) {
+    public Task(String title, String description, int price, Client client, Worker worker, Instant executedAt) {
         this.title = title;
         this.description = description;
         this.price = price;
         this.client = client;
         this.worker = worker;
+        this.executedAt = executedAt;
     }
 
     public Long getId() {
@@ -83,5 +91,17 @@ public class Task {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public Instant getExecutedAt() {
+        return executedAt;
+    }
+
+    public void setExecutedAt(Instant executedAt) {
+        this.executedAt = executedAt;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 }
