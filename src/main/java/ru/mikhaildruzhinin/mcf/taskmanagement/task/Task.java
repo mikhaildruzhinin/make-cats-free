@@ -27,6 +27,12 @@ public class Task {
     protected Task() {
     }
 
+    public Task(String title, String description, Client client) {
+        this.title = title;
+        this.description = description;
+        this.client = client;
+    }
+
     public Long getId() {
         return id;
     }

@@ -22,4 +22,8 @@ public class ClientRepository implements PanacheRepository<Client> {
     public Uni<Integer> update(Long id, String name, Long managerId) {
         return update("name = '%s', manager.id = %d where id = ?1".formatted(name, managerId), id);
     }
+
+    public Uni<Client> findByName(String name) {
+        return find("select c from Client c where name = ?1", name).firstResult();
+    }
 }

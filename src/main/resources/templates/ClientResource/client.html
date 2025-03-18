@@ -1,6 +1,70 @@
 {#include base.html}
+    {#name}{name}{/name}
     {#role}Client{/role}
     {#content}
-        <h1>Hello {http: param('name', 'World')}!</h1>
+        <div class="accordion w-75 p-3 mx-auto"  id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Account information
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show">
+                    <div class="accordion-body">
+                        <ul class="list-group mt-2">
+                            <li class="list-group-item">
+                                <span class="align-middle">Lorem ipsum dolor sit amet</span>
+                            </li>
+                            <li class="list-group-item">
+                                <span class="align-middle">Lorem ipsum dolor sit amet</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                        Tasks
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse show">
+                    <div class="accordion-body">
+                        <form action="/client/task" method="get">
+                            <button type="submit" class="btn btn-outline-primary">New</button>
+                        </form>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">First</th>
+                                <th scope="col">Last</th>
+                                <th scope="col">Handle</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>@mdo</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>@fat</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td colspan="2">Larry the Bird</td>
+                                <td>@twitter</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     {/content}
 {/include}
