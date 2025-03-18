@@ -10,17 +10,10 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import ru.mikhaildruzhinin.mcf.taskmanagement.client.Client;
-import ru.mikhaildruzhinin.mcf.taskmanagement.client.ClientDto;
-import ru.mikhaildruzhinin.mcf.taskmanagement.client.ClientRepository;
-import ru.mikhaildruzhinin.mcf.taskmanagement.manager.Manager;
-import ru.mikhaildruzhinin.mcf.taskmanagement.manager.ManagerDto;
-import ru.mikhaildruzhinin.mcf.taskmanagement.manager.ManagerRepository;
-import ru.mikhaildruzhinin.mcf.taskmanagement.user.User;
-import ru.mikhaildruzhinin.mcf.taskmanagement.user.UserRepository;
-import ru.mikhaildruzhinin.mcf.taskmanagement.worker.Worker;
-import ru.mikhaildruzhinin.mcf.taskmanagement.worker.WorkerDto;
-import ru.mikhaildruzhinin.mcf.taskmanagement.worker.WorkerRepository;
+import ru.mikhaildruzhinin.mcf.taskmanagement.client.*;
+import ru.mikhaildruzhinin.mcf.taskmanagement.manager.*;
+import ru.mikhaildruzhinin.mcf.taskmanagement.user.*;
+import ru.mikhaildruzhinin.mcf.taskmanagement.worker.*;
 
 import java.net.URI;
 import java.util.List;
@@ -145,7 +138,7 @@ public class AdminResource {
     public Uni<Response> addWorker(@FormParam("name") String name, @FormParam("manager_id") Long managerId) {
 
         Uni<User> user = userRepository.persist(new User(name, "worker"));
-        Uni<Manager> manager = managerRepository.getEntity(managerId);
+        Uni<Manager> manager = managerRepository.find(managerId);
 
         return user.flatMap(u -> manager.map(m -> new Worker(u.getId(), name, m, u))
                 .chain(worker -> workerRepository.persist(worker))
@@ -205,7 +198,7 @@ public class AdminResource {
     public Uni<Response> addClient(@FormParam("name") String name, @FormParam("manager_id") Long managerId) {
 
         Uni<User> user = userRepository.persist(new User(name, "client"));
-        Uni<Manager> manager = managerRepository.getEntity(managerId);
+        Uni<Manager> manager = managerRepository.find(managerId);
 
         return user.flatMap(u -> manager.map(m -> new Client(u.getId(), name, m, u))
                 .chain(client -> clientRepository.persist(client))

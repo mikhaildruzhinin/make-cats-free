@@ -19,7 +19,7 @@ public class ManagerRepository implements PanacheRepository<Manager> {
                 .firstResult();
     }
 
-    public Uni<Manager> getEntity(Long id) {
+    public Uni<Manager> find(Long id) {
         return find("select m from Manager m left join fetch m.workers w left join fetch m.clients c where m.id = ?1", id).firstResult();
     }
 
