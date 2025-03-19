@@ -26,4 +26,8 @@ public class ClientRepository implements PanacheRepository<Client> {
     public Uni<Client> findByName(String name) {
         return find("select c from Client c where name = ?1", name).firstResult();
     }
+
+    public Uni<List<Client>> findByManagerId(Long managerId) {
+        return find("select c from Client c where manager.id = ?1", managerId).list();
+    }
 }

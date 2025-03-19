@@ -26,4 +26,8 @@ public class WorkerRepository implements PanacheRepository<Worker> {
     public Uni<Worker> findRandom() {
         return find("select w from Worker w order by random()").firstResult();
     }
+
+    public Uni<List<Worker>> findByManagerId(Long managerId) {
+        return find("select w from Worker w where manager.id = ?1", managerId).list();
+    }
 }

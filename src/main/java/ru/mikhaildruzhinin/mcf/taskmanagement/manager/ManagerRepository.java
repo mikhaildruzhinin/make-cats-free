@@ -26,4 +26,8 @@ public class ManagerRepository implements PanacheRepository<Manager> {
     public Uni<Integer> update(Long id, String name) {
         return update("name = '%s' where id = ?1".formatted(name), id);
     }
+
+    public Uni<Manager> findByName(String name) {
+        return find("select m from Manager m where name = ?1", name).firstResult();
+    }
 }
