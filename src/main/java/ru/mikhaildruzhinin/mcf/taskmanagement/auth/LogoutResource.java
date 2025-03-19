@@ -14,7 +14,6 @@ public class LogoutResource {
 
     @POST
     public Uni<Response> logout() {
-        // TODO remove logout button from login page
         return Uni.createFrom().item(Response.seeOther(URI.create("/login")).build());
     }
 }
