@@ -10,6 +10,8 @@ import java.util.List;
 public class TaskRepository implements PanacheRepository<Task> {
 
     public Uni<List<TaskDto>> filterByClientId(Long clientId) {
-        return find("select id, title, description, price from Task where client.id = ?1", clientId).project(TaskDto.class).list();
+        return find("select id, title, description, price from Task where client.id = ?1", clientId)
+                .project(TaskDto.class)
+                .list();
     }
 }
