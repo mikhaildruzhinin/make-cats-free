@@ -3,7 +3,12 @@
         <div class="accordion w-75 p-3 mx-auto"  id="accordionExample">
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                    <button class="accordion-button"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseTwo"
+                            aria-expanded="true"
+                            aria-controls="collapseTwo">
                         Workers
                     </button>
                 </h2>
@@ -12,7 +17,8 @@
                         <ul class="list-group mt-2">
                             {#for worker in workers}
                                 <li class="list-group-item">
-                                    <a href="/admin/worker/{worker.id}" class="stretched-link link-underline-opacity-0 link-body-emphasis">
+                                    <a href="/admin/worker/{worker.id}"
+                                       class="stretched-link link-underline-opacity-0 link-body-emphasis">
                                         {worker.name}
                                     </a>
                                 </li>
@@ -23,7 +29,12 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                    <button class="accordion-button"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseThree"
+                            aria-expanded="true"
+                            aria-controls="collapseThree">
                         Clients
                     </button>
                 </h2>
@@ -32,7 +43,8 @@
                         <ul class="list-group mt-2">
                             {#for client in clients}
                                 <li class="list-group-item">
-                                    <a href="/admin/client/{client.id}" class="stretched-link link-underline-opacity-0 link-body-emphasis">
+                                    <a href="/admin/client/{client.id}"
+                                       class="stretched-link link-underline-opacity-0 link-body-emphasis">
                                         {client.name}
                                     </a>
                                 </li>
